@@ -6,14 +6,14 @@ import Login from './Login'
 import firebase from '../firebase'
 
 function App() {
-  const [user, setUser] = useState({ loggedIn: false })
-
   useEffect(() => {
+    console.log('yooo')
     const unsubscribe = firebase.isInitialized(setUser)
-    return () => {
-      unsubscribe()
-    }
+    
+    return () => unsubscribe()
   }, [])
+
+  const [user, setUser] = useState({ loggedIn: false })
 
   return (
     <>
