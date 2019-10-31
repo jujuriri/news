@@ -6,7 +6,7 @@ function Home() {
   return (
     <div className="Home">
       <h1>Home(Public)</h1>
-      <button onClick={() => history.push('/admin')}>Admin</button>
+      <button onClick={() => history.push('/login')}>Admin</button>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-function Admin() {
+function Login() {
   const history = useHistory()
   return (
     <div>
@@ -11,4 +11,4 @@ function Admin() {
   )
 }
 
-export default Admin
+export default Login
