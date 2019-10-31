@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 import { CssBaseline } from '@material-ui/core'
 import Home from './Home'
 import Login from './Login'
@@ -18,16 +18,21 @@ function App() {
   return (
     <>
       <CssBaseline />
-      <Router>
-        <Switch>
-          <Route path="/" exact>
-            <Home />
-          </Route>
-          <Route path="/login" exact>
-            <Login />
-          </Route>
-        </Switch>
-      </Router>
+      <header>
+        <div>Logo</div>
+        <Router>
+          <div>
+            <NavLink exact to="/" activeClassName="nav-active">
+              Home
+            </NavLink>
+            <NavLink to="/login" activeClassName="nav-active">
+              Login
+            </NavLink>
+          </div>
+          <Route exact path="/" render={() => <Home />} />
+          <Route path="/login" render={() => <Login />} />
+        </Router>
+      </header>
     </>
   )
 }
