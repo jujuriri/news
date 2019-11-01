@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 import { CssBaseline, makeStyles, AppBar, Toolbar, ListItem, ListItemText } from '@material-ui/core'
 import Home from './Home'
-import Login from './Login'
-import firebase from '../firebase'
+import Admin from './Admin'
 
 const useStyles = makeStyles(theme => ({
   appbar: {
@@ -25,12 +24,7 @@ function App() {
 
   useEffect(() => {
     console.log('yooo')
-    const unsubscribe = firebase.isInitialized(setUser)
-
-    return () => unsubscribe()
   }, [])
-
-  const [user, setUser] = useState({ loggedIn: false })
 
   return (
     <>
@@ -53,14 +47,14 @@ function App() {
               button
               key="Login"
               component={NavLink}
-              to="/login"
+              to="/admin"
             >
-              <ListItemText primary="Login" />
+              <ListItemText primary="Admin" />
             </ListItem>
           </Toolbar>
         </AppBar>
         <Route exact path="/" render={() => <Home />} />
-        <Route path="/login" render={() => <Login />} />
+        <Route path="/admin" render={() => <Admin />} />
       </Router>
     </>
   )

@@ -1,5 +1,14 @@
-import React from 'react'
-import { makeStyles, Button, TextField, ListItem, ListItemText, Avatar } from '@material-ui/core'
+import React, { useState } from 'react'
+import { useFirebase } from '../firebase'
+import {
+  makeStyles,
+  Typography,
+  Button,
+  TextField,
+  ListItem,
+  ListItemText,
+  Avatar,
+} from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -15,6 +24,9 @@ const useStyles = makeStyles(theme => ({
     width: 60,
     height: 60,
   },
+  title: {
+    marginBottom: theme.spacing(1),
+  },
   textField: {
     margin: theme.spacing(1),
     flex: '1 1 auto',
@@ -22,6 +34,7 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1),
     flex: '1 1 auto',
+    textTransform: 'none',
   },
   input: {
     display: 'none',
@@ -36,10 +49,16 @@ function Login() {
   const classes = useStyles()
   const loginMsg = 'Only administrator allow to login.'
 
+  const [email, setEmail] = useState('')
+  const [pw, setPw] = useState('')
+
   return (
     <>
       <form className={classes.container} noValidate autoComplete="off">
         <Avatar alt="News" src={require('../assets/imgs/logo.svg')} className={classes.logo} />
+        <Typography className={classes.title} variant="h6">
+          Login
+        </Typography>
         <TextField
           id="outlined-basic"
           className={classes.textField}
@@ -47,6 +66,8 @@ function Login() {
           margin="normal"
           variant="outlined"
           fullWidth
+          value={email}
+          onChange={e => setEmail(e.target.value)}
         />
         <TextField
           id="outlined-password-input"
@@ -57,9 +78,16 @@ function Login() {
           margin="normal"
           variant="outlined"
           fullWidth
+          value={pw}
+          onChange={e => setPw(e.target.value)}
         />
-        <Button variant="outlined" className={classes.button} fullWidth>
-          Log In
+        <Button
+          variant="outlined"
+          className={classes.button}
+          fullWidth
+          onClick={() => useFirebase.login(email, pw)}
+        >
+          Login
         </Button>
         <ListItem className={classes.loginMsg}>
           <ListItemText primary={loginMsg} />

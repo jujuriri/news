@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
@@ -24,19 +25,30 @@ class Firebase {
     return this.auth.signInWithEmailAndPassword(email, password)
   }
 
-  logout() {
+  logOut() {
     return this.auth.signOut()
   }
 
-  isInitialized(callback) {
-    return this.auth.onAuthStateChanged(user => {
-      if (user) {
-        callback({ loggedIn: true })
-      } else {
-        callback({ loggedIn: false })
-      }
+  isLoggedIn(callback) {
+    return this.auth.onAuthStateChanged(authUser => {
+      authUser ? callback(authUser) : callback(null)
     })
   }
+
+  // getNews() {
+  //   return this.db.
+  // }
 }
 
-export default new Firebase()
+const useFirebase = new Firebase()
+
+const useFirebaseAuth = firebase => {
+  const [authUser, setAuthUser] = useState(null)
+  useEffect(() => {
+    const unlisten = firebase.isLoggedIn(setAuthUser)
+    return () => unlisten()
+  }, [firebase])
+  return authUser
+}
+
+export { useFirebase, useFirebaseAuth }
