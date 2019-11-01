@@ -35,7 +35,11 @@ class Firebase {
     })
   }
 
-  // getNews() {
+  // getSettings() {
+  //   return this.db.
+  // }
+
+  // saveSettings() {
   //   return this.db.
   // }
 }

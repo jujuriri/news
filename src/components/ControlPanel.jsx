@@ -15,7 +15,18 @@ function ControlPanel() {
   return (
     <>
       <p>Control Panel</p>
-      <p>Control Panel</p>
+      <p>Publishers</p>
+      <p>Countries</p>
+      <p>Categories</p>
+      <Button
+        className={classes.button}
+        variant="outlined"
+        fullWidth
+        onClick={() => console.log('saved!')}
+      >
+        {/* onClick={() => useFirebase.saveSettings()} */}
+        Save
+      </Button>
       <Button
         className={classes.button}
         variant="outlined"

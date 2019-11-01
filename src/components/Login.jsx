@@ -85,7 +85,9 @@ function Login() {
           variant="outlined"
           className={classes.button}
           fullWidth
-          onClick={() => useFirebase.login(email, pw)}
+          onClick={() => {
+            useFirebase.login(email, pw).catch(err => console.log(err.message))
+          }}
         >
           Login
         </Button>

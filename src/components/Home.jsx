@@ -18,6 +18,11 @@ function Home() {
   return (
     <div>
       <h1>Home(Public)</h1>
+      <p>A-Z of news titles</p>
+      <p>Latest to Oldest published dates</p>
+      <p>Publishers</p>
+      <p>Countries</p>
+      <p>Categories</p>
     </div>
   )
 }
