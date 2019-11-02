@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useFirebase } from '../firebase'
 import {
   makeStyles,
   Typography,
@@ -9,6 +8,8 @@ import {
   ListItemText,
   Avatar,
 } from '@material-ui/core'
+import { useFirebase } from '../firebase'
+import avatarImg from '../assets/imgs/logo.svg'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -53,49 +54,47 @@ function Login() {
   const [pw, setPw] = useState('')
 
   return (
-    <>
-      <form className={classes.container} noValidate autoComplete="off">
-        <Avatar alt="News" src={require('../assets/imgs/logo.svg')} className={classes.logo} />
-        <Typography className={classes.title} variant="h6">
-          Login
-        </Typography>
-        <TextField
-          id="outlined-basic"
-          className={classes.textField}
-          label="Email"
-          margin="normal"
-          variant="outlined"
-          fullWidth
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-        />
-        <TextField
-          id="outlined-password-input"
-          label="Password"
-          className={classes.textField}
-          type="password"
-          autoComplete="current-password"
-          margin="normal"
-          variant="outlined"
-          fullWidth
-          value={pw}
-          onChange={e => setPw(e.target.value)}
-        />
-        <Button
-          variant="outlined"
-          className={classes.button}
-          fullWidth
-          onClick={() => {
-            useFirebase.login(email, pw).catch(err => console.log(err.message))
-          }}
-        >
-          Login
-        </Button>
-        <ListItem className={classes.loginMsg}>
-          <ListItemText primary={loginMsg} />
-        </ListItem>
-      </form>
-    </>
+    <form className={classes.container} noValidate autoComplete="off">
+      <Avatar alt="News" src={avatarImg} className={classes.logo} />
+      <Typography className={classes.title} variant="h6">
+        Login
+      </Typography>
+      <TextField
+        id="outlined-basic"
+        className={classes.textField}
+        label="Email"
+        margin="normal"
+        variant="outlined"
+        fullWidth
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+      />
+      <TextField
+        id="outlined-password-input"
+        label="Password"
+        className={classes.textField}
+        type="password"
+        autoComplete="current-password"
+        margin="normal"
+        variant="outlined"
+        fullWidth
+        value={pw}
+        onChange={e => setPw(e.target.value)}
+      />
+      <Button
+        variant="outlined"
+        className={classes.button}
+        fullWidth
+        onClick={() => {
+          useFirebase.login(email, pw).catch(err => console.log(err.message))
+        }}
+      >
+        Login
+      </Button>
+      <ListItem className={classes.loginMsg}>
+        <ListItemText primary={loginMsg} />
+      </ListItem>
+    </form>
   )
 }
 

@@ -46,12 +46,12 @@ class Firebase {
 
 const useFirebase = new Firebase()
 
-const useFirebaseAuth = firebase => {
+const useFirebaseAuth = myFirebase => {
   const [authUser, setAuthUser] = useState(null)
   useEffect(() => {
-    const unlisten = firebase.isLoggedIn(setAuthUser)
+    const unlisten = myFirebase.isLoggedIn(setAuthUser)
     return () => unlisten()
-  }, [firebase])
+  }, [myFirebase])
   return authUser
 }
 

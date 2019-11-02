@@ -1,8 +1,16 @@
 import React from 'react'
-import { useFirebase } from '../firebase'
 import { makeStyles, Button } from '@material-ui/core'
+import { useFirebase } from '../firebase'
 
 const useStyles = makeStyles(theme => ({
+  container: {
+    display: 'flex',
+    flexFlow: 'column',
+    width: 300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 'auto',
+  },
   button: {
     margin: theme.spacing(1),
     textTransform: 'none',
@@ -13,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 function ControlPanel() {
   const classes = useStyles()
   return (
-    <>
+    <div className={classes.container}>
       <p>Control Panel</p>
       <p>Publishers</p>
       <p>Countries</p>
@@ -35,7 +43,7 @@ function ControlPanel() {
       >
         Log Out
       </Button>
-    </>
+    </div>
   )
 }
 
