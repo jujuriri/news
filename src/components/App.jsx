@@ -23,7 +23,7 @@ function App() {
   const classes = useStyles()
 
   useEffect(() => {
-    console.log('yooo')
+    console.log('App here!')
   }, [])
 
   return (

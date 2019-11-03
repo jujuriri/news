@@ -1,8 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { makeStyles, Button } from '@material-ui/core'
-import axios from 'axios'
-import { useFirebase } from '../firebase'
-// import { FirebaseContext } from '../index'
+import { AdminContext, NewsContext } from '../context'
 import Selector from './Selector'
 
 // Get admin settings from firestore first,
@@ -21,39 +19,23 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1),
     textTransform: 'none',
-    width: 300,
+    width: 100,
   },
 }))
 
 const Home = () => {
-  // const firebase = useContext(FirebaseContext)
+  const admin = useContext(AdminContext)
+  const news = useContext(NewsContext)
   const classes = useStyles()
 
-  const [countries, setCountries] = useState({})
-  const [publishers, setPublishers] = useState({})
-  const [categories, setCategories] = useState({})
   const [selectedCountry, setSelectedCountry] = useState('')
   const [selectedPublisher, setSelectedPublisher] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
 
   useEffect(() => {
-    const getOptions = async () => {
-      const res = await axios(
-        'https://newsapi.org/v2/sources?apiKey=3c44d2e5c78b40e390758064d60eee87'
-      )
-      const categoriesSet = new Set(res.data.sources.map(source => source.category))
-      const countriesSet = new Set(res.data.sources.map(source => source.country))
-      const publishersSet = new Set(
-        res.data.sources.map(source => {
-          return { name: source.name, domain: source.url }
-        })
-      )
-      setCategories(categoriesSet)
-      setCountries(countriesSet)
-      setPublishers(publishersSet)
-    }
-    getOptions()
-  }, [])
+    console.log('AdminContext', admin)
+    console.log('NewsContext', news)
+  }, [admin, news])
 
   const changeCountry = value => {
     setSelectedCountry(value)
@@ -69,31 +51,30 @@ const Home = () => {
 
   return (
     <div className={classes.container}>
-      <h1>Home(Public)</h1>
-      <p>A-Z of news titles</p>
-      <p>Latest to Oldest published dates</p>
       <div>
         <Selector
           name="Publisher"
-          options={publishers}
+          // options={publishers}
           selected={selectedPublisher}
           changeHandler={chagePublisher}
         />
         <Selector
           name="Country"
-          options={countries}
+          // options={countries}
           selected={selectedCountry}
           changeHandler={changeCountry}
         />
         <Selector
           name="Category"
-          options={categories}
+          // options={categories}
           selected={selectedCategory}
           changeHandler={changeCategory}
         />
       </div>
       <div>
-        <p>Sort by: </p>
+        <Button disabled className={classes.button}>
+          Sort by :
+        </Button>
         <Button className={classes.button} variant="outlined" fullWidth>
           Date
         </Button>

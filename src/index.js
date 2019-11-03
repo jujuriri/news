@@ -1,19 +1,12 @@
-import React, { createContext } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
-import { useFirebase } from './firebase'
+import { Provider } from './context'
 import App from './components/App'
 import './index.css'
 
-const FirebaseContext = createContext()
-const FirebaseProvider = props => (
-  <FirebaseContext.Provider value={useFirebase}>{props.children}</FirebaseContext.Provider>
-)
-
 ReactDOM.render(
-  <FirebaseProvider>
+  <Provider>
     <App />
-  </FirebaseProvider>,
+  </Provider>,
   document.getElementById('root')
 )
-
-export { FirebaseContext }
