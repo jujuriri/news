@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect } from 'react'
+// import axios from 'axios'
+// import { useFirebase } from '../firebase'
 import { makeStyles, Button } from '@material-ui/core'
-import { AdminContext, NewsContext } from '../context'
+import { NewsContext } from '../context/news'
 import Selector from './Selector'
 
 // Get admin settings from firestore first,
@@ -24,7 +26,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Home = () => {
-  const admin = useContext(AdminContext)
   const news = useContext(NewsContext)
   const classes = useStyles()
 
@@ -33,9 +34,10 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState('')
 
   useEffect(() => {
-    console.log('AdminContext', admin)
-    console.log('NewsContext', news)
-  }, [admin, news])
+    // useFirebase.getSettings()
+    console.log('news Context')
+    console.log('Home here!')
+  }, [])
 
   const changeCountry = value => {
     setSelectedCountry(value)
@@ -54,19 +56,19 @@ const Home = () => {
       <div>
         <Selector
           name="Publisher"
-          // options={publishers}
+          options={news.publishers}
           selected={selectedPublisher}
           changeHandler={chagePublisher}
         />
         <Selector
           name="Country"
-          // options={countries}
+          options={news.countries}
           selected={selectedCountry}
           changeHandler={changeCountry}
         />
         <Selector
           name="Category"
-          // options={categories}
+          options={news.categories}
           selected={selectedCategory}
           changeHandler={changeCategory}
         />

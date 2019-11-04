@@ -54,7 +54,7 @@ const Selector = ({ name, options, changeHandler, selected }) => {
 
 Selector.propTypes = {
   name: PropTypes.string.isRequired,
-  options: PropTypes.object.isRequired,
+  options: PropTypes.object,
   changeHandler: PropTypes.func.isRequired,
   selected: PropTypes.string.isRequired,
 }

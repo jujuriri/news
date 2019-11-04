@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { NewsContext } from '../context/news'
 import { makeStyles, Button } from '@material-ui/core'
 import { useFirebase } from '../firebase'
+import Selector from './Selector'
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -20,10 +22,11 @@ const useStyles = makeStyles(theme => ({
 
 function ControlPanel() {
   const classes = useStyles()
+  const news = useContext(NewsContext)
   return (
     <div className={classes.container}>
       <p>Control Panel</p>
-      <p>Publishers</p>
+      <Selector name="Publisher" options={news.publishers} />
       <p>Countries</p>
       <p>Categories</p>
       <Button

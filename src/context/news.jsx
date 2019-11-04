@@ -1,15 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import { useFirebase } from './firebase'
 
-export const AdminContext = createContext()
-export const AdminProvider = AdminContext.provider
-
-export const NewsContext = createContext()
-export const NewsProvider = NewsContext.provider
-
-export const Provider = ({ children }) => {
+export const NewsContext = createContext(null)
+export const NewsProvider = ({ children }) => {
   const [countries, setCountries] = useState({})
   const [publishers, setPublishers] = useState({})
   const [categories, setCategories] = useState({})
@@ -32,16 +26,15 @@ export const Provider = ({ children }) => {
       setPublishers(publishersSet)
     }
     getOptions()
-    useFirebase.getSettings()
   }, [])
 
   return (
-    <AdminProvider value="YOYOYOYOYOYOO">
-      <NewsProvider value={{ countries, publishers, categories }}>{children}</NewsProvider>
-    </AdminProvider>
+    <NewsContext.Provider value={{ countries, publishers, categories }}>
+      {children}
+    </NewsContext.Provider>
   )
 }
 
-Provider.propTypes = {
+NewsProvider.propTypes = {
   children: PropTypes.node.isRequired,
 }
