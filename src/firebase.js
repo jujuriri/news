@@ -42,9 +42,12 @@ class Firebase {
       .get()
   }
 
-  // saveSettings() {
-  //   return this.db.
-  // }
+  saveSettings(settings) {
+    return this.db
+      .collection('settings')
+      .doc('options')
+      .set(settings)
+  }
 }
 
 const useFirebase = new Firebase()

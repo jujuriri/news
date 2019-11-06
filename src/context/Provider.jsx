@@ -8,7 +8,9 @@ const Provider = ({ children }) => {
   const [countries, setCountries] = useState({})
   const [publishers, setPublishers] = useState({})
   const [categories, setCategories] = useState({})
-  const [adminSettings, setAdminSettings] = useState({})
+  const [adminCountry, setAdminCountry] = useState('')
+  const [adminPublisher, setAdminPublisher] = useState('')
+  const [adminCategory, setAdminCategory] = useState('')
 
   useEffect(() => {
     // Fetch data from News API (/source), just for displaying options of selectors.
@@ -27,18 +29,24 @@ const Provider = ({ children }) => {
       setCountries(countriesSet)
       setPublishers(publishersSet)
     }
+
+    const getFiresotre = async () => {
+      const doc = await useFirebase.getSettings()
+      console.log('getFirestore: Settings got at Provider →', doc.data())
+      setAdminCountry(doc.data().country)
+      setAdminPublisher(doc.data().publisher)
+      setAdminCategory(doc.data().category)
+    }
+
     getOptions()
-    useFirebase.getSettings().then(doc => {
-      console.log('Settings got at Provider:', doc.data())
-      setAdminSettings(doc.data())
-    })
+    getFiresotre()
   }, [])
 
   const NewsProvider = NewsContext.Provider
   const FirestoreProvider = FirestoreContext.Provider
 
   return (
-    <FirestoreProvider value={{ adminSettings }}>
+    <FirestoreProvider value={{ adminCountry, adminPublisher, adminCategory }}>
       <NewsProvider value={{ countries, publishers, categories }}>{children}</NewsProvider>
     </FirestoreProvider>
   )

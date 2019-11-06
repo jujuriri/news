@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 import { CssBaseline, makeStyles, AppBar, Toolbar, ListItem, ListItemText } from '@material-ui/core'
 import Home from './Home'

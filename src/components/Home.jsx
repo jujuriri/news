@@ -7,7 +7,7 @@ import Selector from './Selector'
 // Get admin settings from firestore first,
 // then get news data based on that settings.
 // Guests can change settings, but once they leave or refresh
-// settings will reset (change back to admin's setting).
+// settings will reset back to admin's setting.
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -29,25 +29,36 @@ const Home = () => {
   const firestore = useContext(FirestoreContext)
   const classes = useStyles()
 
-  const [selectedCountry, setSelectedCountry] = useState('')
-  const [selectedPublisher, setSelectedPublisher] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const [selectedCtry, setSelectedCtry] = useState('')
+  const [selectedPubl, setSelectedPubl] = useState('')
+  const [selectedCat, setSelectedCat] = useState('')
 
   useEffect(() => {
-    console.log('news Context')
     console.log('Home here!')
   }, [])
 
-  const changeCountry = value => {
-    setSelectedCountry(value)
+  useEffect(() => {
+    if (firestore.adminCategory !== '') {
+      console.log('YOYOYOO', firestore.adminCategory)
+    } else {
+      console.log('loading')
+    }
+  }, [firestore.adminCategory])
+
+  const changeCtry = value => {
+    setSelectedCtry(value)
   }
 
-  const changeCategory = value => {
-    setSelectedCategory(value)
+  const changeCat = value => {
+    setSelectedCat(value)
   }
 
-  const chagePublisher = value => {
-    setSelectedPublisher(value)
+  const chagePubl = value => {
+    setSelectedPubl(value)
+  }
+
+  const getNews = async () => {
+    // call News API (/everything) based on selected options or admin's Settings.
   }
 
   return (
@@ -56,21 +67,24 @@ const Home = () => {
         <Selector
           name="Publisher"
           options={news.publishers}
-          selected={selectedPublisher}
-          changeHandler={chagePublisher}
+          selected={selectedPubl}
+          changeHandler={chagePubl}
         />
         <Selector
           name="Country"
           options={news.countries}
-          selected={selectedCountry}
-          changeHandler={changeCountry}
+          selected={selectedCtry}
+          changeHandler={changeCtry}
         />
         <Selector
           name="Category"
           options={news.categories}
-          selected={selectedCategory}
-          changeHandler={changeCategory}
+          selected={selectedCat}
+          changeHandler={changeCat}
         />
+        <Button className={classes.button} variant="outlined" fullWidth>
+          Search
+        </Button>
       </div>
       <div>
         <Button disabled className={classes.button}>
@@ -83,7 +97,7 @@ const Home = () => {
           Title
         </Button>
       </div>
-      {console.log(firestore.adminSettings.admin)}
+      <p>{`1111${firestore.adminCategory}`}</p>
     </div>
   )
 }
