@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { NewsProvider } from '../context/news'
-import { useFirebase } from '../firebase'
 import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 import { CssBaseline, makeStyles, AppBar, Toolbar, ListItem, ListItemText } from '@material-ui/core'
 import Home from './Home'
@@ -23,13 +21,9 @@ const useStyles = makeStyles(theme => ({
 
 function App() {
   const classes = useStyles()
-  const [adminSettings, setAdminSettings] = useState({})
 
   useEffect(() => {
-    useFirebase.getSettings().then(res => {
-      setAdminSettings(res)
-    })
-    console.log('App here!', adminSettings)
+    console.log('App here!')
   }, [])
 
   return (
@@ -59,23 +53,8 @@ function App() {
             </ListItem>
           </Toolbar>
         </AppBar>
-        <Route
-          exact
-          path="/"
-          render={() => (
-            <NewsProvider>
-              <Home />
-            </NewsProvider>
-          )}
-        />
-        <Route
-          path="/admin"
-          render={() => (
-            <NewsProvider>
-              <Admin />
-            </NewsProvider>
-          )}
-        />
+        <Route exact path="/" render={() => <Home />} />
+        <Route path="/admin" render={() => <Admin />} />
       </Router>
     </>
   )

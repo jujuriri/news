@@ -1,12 +1,14 @@
-import React, { createContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
+import { NewsContext, FirestoreContext } from './context'
+import { useFirebase } from '../firebase'
 
-export const NewsContext = createContext(null)
-export const NewsProvider = ({ children }) => {
+const Provider = ({ children }) => {
   const [countries, setCountries] = useState({})
   const [publishers, setPublishers] = useState({})
   const [categories, setCategories] = useState({})
+  const [adminSettings, setAdminSettings] = useState({})
 
   useEffect(() => {
     // Fetch data from News API (/source), just for displaying options of selectors.
@@ -26,15 +28,24 @@ export const NewsProvider = ({ children }) => {
       setPublishers(publishersSet)
     }
     getOptions()
+    useFirebase.getSettings().then(doc => {
+      console.log('Settings got at Provider:', doc.data())
+      setAdminSettings(doc.data())
+    })
   }, [])
 
+  const NewsProvider = NewsContext.Provider
+  const FirestoreProvider = FirestoreContext.Provider
+
   return (
-    <NewsContext.Provider value={{ countries, publishers, categories }}>
-      {children}
-    </NewsContext.Provider>
+    <FirestoreProvider value={{ adminSettings }}>
+      <NewsProvider value={{ countries, publishers, categories }}>{children}</NewsProvider>
+    </FirestoreProvider>
   )
 }
 
-NewsProvider.propTypes = {
+Provider.propTypes = {
   children: PropTypes.node.isRequired,
 }
+
+export default Provider

@@ -1,8 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
-// import axios from 'axios'
-// import { useFirebase } from '../firebase'
+import axios from 'axios'
 import { makeStyles, Button } from '@material-ui/core'
-import { NewsContext } from '../context/news'
+import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
 
 // Get admin settings from firestore first,
@@ -27,6 +26,7 @@ const useStyles = makeStyles(theme => ({
 
 const Home = () => {
   const news = useContext(NewsContext)
+  const firestore = useContext(FirestoreContext)
   const classes = useStyles()
 
   const [selectedCountry, setSelectedCountry] = useState('')
@@ -34,7 +34,6 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState('')
 
   useEffect(() => {
-    // useFirebase.getSettings()
     console.log('news Context')
     console.log('Home here!')
   }, [])
@@ -84,6 +83,7 @@ const Home = () => {
           Title
         </Button>
       </div>
+      {console.log(firestore.adminSettings.admin)}
     </div>
   )
 }

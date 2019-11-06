@@ -40,12 +40,6 @@ class Firebase {
       .collection('settings')
       .doc('options')
       .get()
-      .then(doc => {
-        if (doc.exists) {
-          console.log('Document data:', doc.data())
-          return doc.data()
-        }
-      })
   }
 
   // saveSettings() {

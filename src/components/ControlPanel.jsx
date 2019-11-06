@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
-import { NewsContext } from '../context/news'
 import { makeStyles, Button } from '@material-ui/core'
+import { NewsContext } from '../context/context'
 import { useFirebase } from '../firebase'
 import Selector from './Selector'
 
