@@ -38,12 +38,32 @@ const Home = () => {
   }, [])
 
   useEffect(() => {
+    const getNews = async (ctry, cat, publ) => {
+      const domain = Array.from(news.publishers)
+        .filter(publisher => {
+          return publisher.name === publ
+        })
+        .map(selected => selected.domain)
+      // call News API (/top-headlines) based on selected options or admin's Settings.
+      const res = await axios(
+        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
+        {
+          params: {
+            country: ctry,
+            category: cat,
+          },
+        }
+      )
+      console.log('Top-Headlines res', res)
+      console.log('Top-Headlines Domain', `${domain}`)
+    }
     if (firestore.adminCategory !== '') {
-      console.log('YOYOYOO', firestore.adminCategory)
+      console.log('YOYOYOO')
+      getNews(firestore.adminCountry, firestore.adminCategory, firestore.adminPublisher)
     } else {
       console.log('loading')
     }
-  }, [firestore.adminCategory])
+  }, [firestore.adminCategory, firestore.adminCountry, firestore.adminPublisher, news.publishers])
 
   const changeCtry = value => {
     setSelectedCtry(value)
@@ -55,10 +75,6 @@ const Home = () => {
 
   const chagePubl = value => {
     setSelectedPubl(value)
-  }
-
-  const getNews = async () => {
-    // call News API (/everything) based on selected options or admin's Settings.
   }
 
   return (
