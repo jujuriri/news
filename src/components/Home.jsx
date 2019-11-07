@@ -3,6 +3,8 @@ import axios from 'axios'
 import { makeStyles, Button } from '@material-ui/core'
 import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
+import Masonry from './Masonry'
+import NewsCard from './NewsCard'
 
 // Get admin settings from firestore first,
 // then get news data based on that settings.
@@ -32,6 +34,7 @@ const Home = () => {
   const [selectedCtry, setSelectedCtry] = useState('')
   const [selectedPubl, setSelectedPubl] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
+  const [newsList, setNewsList] = useState([])
 
   useEffect(() => {
     console.log('Home here!')
@@ -56,12 +59,13 @@ const Home = () => {
       )
       console.log('Top-Headlines res', res)
       console.log('Top-Headlines Domain', `${domain}`)
+      setNewsList(res.data.articles)
     }
     if (firestore.adminCategory !== '') {
-      console.log('YOYOYOO')
+      console.log('News Appear!')
       getNews(firestore.adminCountry, firestore.adminCategory, firestore.adminPublisher)
     } else {
-      console.log('loading')
+      console.log('Loading')
     }
   }, [firestore.adminCategory, firestore.adminCountry, firestore.adminPublisher, news.publishers])
 
@@ -113,7 +117,20 @@ const Home = () => {
           Title
         </Button>
       </div>
-      <p>{`1111${firestore.adminCategory}`}</p>
+      <Masonry>
+        {newsList.map((news, i) => {
+          return (
+            <NewsCard
+              key={`newsCard-${i}`}
+              imgUrl={news.urlToImage}
+              newsTitle={news.title}
+              newsSummary={news.description}
+              publishedAt={news.publishedAt}
+              sourceName={news.source.name}
+            />
+          )
+        })}
+      </Masonry>
     </div>
   )
 }

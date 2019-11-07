@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import {
   makeStyles,
   Card,
@@ -12,11 +13,13 @@ import {
 
 const useStyles = makeStyles(theme => ({
   card: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1, 1, 2, 1),
+    width: '100%',
+    maxWidth: 300,
   },
 }))
 
-const NewsCard = () => {
+const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) => {
   const classes = useStyles()
   return (
     <Card className={classes.card}>
@@ -25,29 +28,44 @@ const NewsCard = () => {
           component="img"
           alt="Contemplative Reptile"
           height="140"
-          image="/static/images/cards/contemplative-reptile.jpg"
-          title="Contemplative Reptile"
+          image={imgUrl}
+          title={newsTitle}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            Lizard
+            {newsTitle}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
+            {newsSummary}
           </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions>
         <Button size="small" color="primary">
-          Share
+          {publishedAt}
         </Button>
         <Button size="small" color="primary">
-          Learn More
+          {sourceName}
         </Button>
       </CardActions>
     </Card>
   )
+}
+
+NewsCard.defaultProps = {
+  imgToUrl: 'https://source.unsplash.com/random/300x400',
+  newsTitle: 'I am a news title',
+  newsSummary: 'I am a news summary',
+  publishedAt: '0000/00/00 00:00',
+  sourceName: 'jujuriri',
+}
+
+NewsCard.propTypes = {
+  imgToUrl: PropTypes.string,
+  newsTitle: PropTypes.string,
+  newsSummary: PropTypes.string,
+  publishedAt: PropTypes.string,
+  sourceName: PropTypes.string,
 }
 
 export default NewsCard
