@@ -1,9 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles, Typography } from '@material-ui/core'
-import AppBar from '@material-ui/core/AppBar'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
+import { makeStyles, Typography, AppBar, Tabs, Tab } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {

@@ -5,6 +5,7 @@ import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
 import Masonry from './Masonry'
 import NewsCard from './NewsCard'
+import SortByBtns from './SortByBtns'
 
 const NewsPaper = ({ readBy }) => {
   const news = useContext(NewsContext)
@@ -93,6 +94,7 @@ const NewsPaper = ({ readBy }) => {
             selected={selectedCat}
             changeHandler={val => setSelectedCat(val)}
           />
+          <SortByBtns sortNews={() => console.log('SortNews Func')} />
           <Masonry>
             {newsListCtryCat.map((n, i) => {
               return (
