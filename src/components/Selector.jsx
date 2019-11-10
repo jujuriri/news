@@ -1,6 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { makeStyles, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
+import {
+  makeStyles,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+} from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   formControl: {
@@ -17,12 +24,23 @@ const Selector = ({ name, options, changeHandler, selected }) => {
   const inputLabel = useRef(null)
 
   const [labelWidth, setLabelWidth] = useState(0)
+  const [hasErr, setHasErr] = useState(false)
   useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth)
+    console.log('inputLabel 寬', inputLabel.current.offsetWidth, inputLabel)
   }, [])
 
+  const selectValid = e => {
+    changeHandler(e.target.value)
+    if (e.target.value === '') {
+      setHasErr(true)
+    } else {
+      setHasErr(false)
+    }
+  }
+
   return (
-    <FormControl variant="outlined" className={classes.formControl}>
+    <FormControl variant="outlined" className={classes.formControl} error={hasErr}>
       <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
         {name}
       </InputLabel>
@@ -30,7 +48,7 @@ const Selector = ({ name, options, changeHandler, selected }) => {
         labelId="demo-simple-select-outlined-label"
         id="demo-simple-select-outlined"
         value={selected}
-        onChange={e => changeHandler(e.target.value)}
+        onChange={e => selectValid(e)}
         labelWidth={labelWidth}
       >
         <MenuItem value="">
@@ -48,6 +66,7 @@ const Selector = ({ name, options, changeHandler, selected }) => {
           )
         })}
       </Select>
+      {hasErr && <FormHelperText>Required.</FormHelperText>}
     </FormControl>
   )
 }

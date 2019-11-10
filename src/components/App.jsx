@@ -6,7 +6,7 @@ import Admin from './Admin'
 
 const useStyles = makeStyles(theme => ({
   appbar: {
-    marginBottom: theme.spacing(4),
+    boxShadow: 'unset',
   },
   toolbar: {
     justifyContent: 'space-between',

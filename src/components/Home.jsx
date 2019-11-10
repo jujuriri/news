@@ -1,10 +1,7 @@
-import React, { useContext, useState, useEffect } from 'react'
-import axios from 'axios'
-import { makeStyles, Button } from '@material-ui/core'
-import { NewsContext, FirestoreContext } from '../context/context'
-import Selector from './Selector'
-import Masonry from './Masonry'
-import NewsCard from './NewsCard'
+import React, { useEffect, useState } from 'react'
+import { makeStyles } from '@material-ui/core'
+import ReadByTabs from './ReadByTabs'
+import NewsPaper from './NewsPaper'
 
 // Get admin settings from firestore first,
 // then get news data based on that settings.
@@ -27,110 +24,21 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Home = () => {
-  const news = useContext(NewsContext)
-  const firestore = useContext(FirestoreContext)
   const classes = useStyles()
 
-  const [selectedCtry, setSelectedCtry] = useState('')
-  const [selectedPubl, setSelectedPubl] = useState('')
-  const [selectedCat, setSelectedCat] = useState('')
-  const [newsList, setNewsList] = useState([])
+  const readBy = ['Country and Category', 'Publisher']
 
   useEffect(() => {
     console.log('Home here!')
   }, [])
 
-  useEffect(() => {
-    const getNews = async (ctry, cat, publ) => {
-      const domain = Array.from(news.publishers)
-        .filter(publisher => {
-          return publisher.name === publ
-        })
-        .map(selected => selected.domain)
-      // call News API (/top-headlines) based on selected options or admin's Settings.
-      const res = await axios(
-        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
-        {
-          params: {
-            country: ctry,
-            category: cat,
-          },
-        }
-      )
-      console.log('Top-Headlines res', res)
-      console.log('Top-Headlines Domain', `${domain}`)
-      setNewsList(res.data.articles)
-    }
-    if (firestore.adminCategory !== '') {
-      console.log('News Appear!')
-      getNews(firestore.adminCountry, firestore.adminCategory, firestore.adminPublisher)
-    } else {
-      console.log('Loading')
-    }
-  }, [firestore.adminCategory, firestore.adminCountry, firestore.adminPublisher, news.publishers])
-
-  const changeCtry = value => {
-    setSelectedCtry(value)
-  }
-
-  const changeCat = value => {
-    setSelectedCat(value)
-  }
-
-  const chagePubl = value => {
-    setSelectedPubl(value)
-  }
-
   return (
     <div className={classes.container}>
-      <div>
-        <Selector
-          name="Publisher"
-          options={news.publishers}
-          selected={selectedPubl}
-          changeHandler={chagePubl}
-        />
-        <Selector
-          name="Country"
-          options={news.countries}
-          selected={selectedCtry}
-          changeHandler={changeCtry}
-        />
-        <Selector
-          name="Category"
-          options={news.categories}
-          selected={selectedCat}
-          changeHandler={changeCat}
-        />
-        <Button className={classes.button} variant="outlined" fullWidth>
-          Search
-        </Button>
-      </div>
-      <div>
-        <Button disabled className={classes.button}>
-          Sort by :
-        </Button>
-        <Button className={classes.button} variant="outlined" fullWidth>
-          Date
-        </Button>
-        <Button className={classes.button} variant="outlined" fullWidth>
-          Title
-        </Button>
-      </div>
-      <Masonry>
-        {newsList.map((news, i) => {
-          return (
-            <NewsCard
-              key={`newsCard-${i}`}
-              imgUrl={news.urlToImage}
-              newsTitle={news.title}
-              newsSummary={news.description}
-              publishedAt={news.publishedAt}
-              sourceName={news.source.name}
-            />
-          )
+      <ReadByTabs>
+        {readBy.map(rb => {
+          return <NewsPaper readBy={rb} key={`NewsPaper-${rb}`} />
         })}
-      </Masonry>
+      </ReadByTabs>
     </div>
   )
 }

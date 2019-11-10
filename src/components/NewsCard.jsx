@@ -53,7 +53,7 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) =
 }
 
 NewsCard.defaultProps = {
-  imgToUrl: 'https://source.unsplash.com/random/300x400',
+  imgUrl: 'https://source.unsplash.com/random/300x400',
   newsTitle: 'I am a news title',
   newsSummary: 'I am a news summary',
   publishedAt: '0000/00/00 00:00',
@@ -61,7 +61,7 @@ NewsCard.defaultProps = {
 }
 
 NewsCard.propTypes = {
-  imgToUrl: PropTypes.string,
+  imgUrl: PropTypes.string,
   newsTitle: PropTypes.string,
   newsSummary: PropTypes.string,
   publishedAt: PropTypes.string,
