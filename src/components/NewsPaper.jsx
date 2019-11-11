@@ -15,6 +15,8 @@ const NewsPaper = ({ readBy }) => {
   const [selectedCtry, setSelectedCtry] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
   const [selectedPubl, setSelectedPubl] = useState('')
+  const [isCtryCatLaoding, setIsCtryCatLoading] = useState(true)
+  const [isPublLaoding, setIsPublLoading] = useState(true)
   const [newsListCtryCat, setNewsListCtryCat] = useState([])
   const [newsListPubl, setNewsListPubl] = useState([])
 
@@ -26,51 +28,58 @@ const NewsPaper = ({ readBy }) => {
   const prevAdminCountry = useRef(firestore.adminCountry)
   const prevAdminCategory = useRef(firestore.adminCategory)
   const prevAdminPublisher = useRef(firestore.adminPublisher)
+  const prevSelectedCtry = useRef(selectedCtry)
+  const prevSelectedCat = useRef(selectedCat)
+  const prevSelectedPubl = useRef(selectedPubl)
 
   // Init: Get News by Ctry & Cat
   useEffect(() => {
+    const getNewsCtryCat = async (ctry, cat, pageNum = null) => {
+      const ctryCode = Array.from(news.countries)
+        .filter(country => country.name === ctry)
+        .map(selected => selected.code)
+      // call News API (/top-headlines) based on selected options or admin's Settings.
+      const res = await axios(
+        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
+        {
+          params: {
+            country: ctryCode,
+            category: cat,
+            page: pageNum,
+          },
+        }
+      )
+      setNewsListCtryCat(res.data.articles)
+    }
     if (
       prevAdminCountry.current !== firestore.adminCountry &&
       prevAdminCategory.current !== firestore.adminCategory
     ) {
-      const getNewsCtryCat = async () => {
-        const ctryCode = Array.from(news.countries)
-          .filter(country => country.name === firestore.adminCountry)
-          .map(selected => selected.code)
-        // call News API (/top-headlines) based on selected options or admin's Settings.
-        const res = await axios(
-          `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
-          {
-            params: {
-              country: ctryCode,
-              category: firestore.adminCategory,
-            },
-          }
-        )
-        setNewsListCtryCat(res.data.articles)
-      }
-      getNewsCtryCat()
+      getNewsCtryCat(firestore.adminCountry, firestore.adminCategory)
+      setIsCtryCatLoading(false)
     }
   }, [firestore.adminCountry, firestore.adminCategory, news.countries, readBy])
 
   // Init: Get News by Publisher
   useEffect(() => {
+    const getNewsPubl = async (publ, pageNum = null) => {
+      const sourceId = Array.from(news.publishers)
+        .filter(publisher => publisher.name === publ)
+        .map(selected => selected.id)
+      const res = await axios(
+        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
+        {
+          params: {
+            sources: sourceId,
+            page: pageNum,
+          },
+        }
+      )
+      setNewsListPubl(res.data.articles)
+    }
     if (prevAdminPublisher.current !== firestore.adminPublisher) {
-      const getNewsPubl = async () => {
-        const sourceId = Array.from(news.publishers)
-          .filter(publisher => publisher.name === firestore.adminPublisher)
-          .map(selected => selected.id)
-        const res = await axios(
-          `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
-          {
-            params: {
-              sources: sourceId,
-            },
-          }
-        )
-        setNewsListPubl(res.data.articles)
-      }
-      getNewsPubl()
+      getNewsPubl(firestore.adminPublisher)
+      setIsPublLoading(false)
     }
   }, [firestore.adminPublisher, news.publishers, readBy])
 
@@ -83,7 +92,7 @@ const NewsPaper = ({ readBy }) => {
 
   return (
     <div>
-      {readBy === 'Country and Category' && (
+      {readBy === 'Country and Category' && !isCtryCatLaoding && (
         <>
           <Selector
             name="Country"
@@ -115,7 +124,7 @@ const NewsPaper = ({ readBy }) => {
           </Masonry>
         </>
       )}
-      {readBy === 'Publisher' && (
+      {readBy === 'Publisher' && !isPublLaoding && (
         <>
           <Selector
             name="Publisher"
@@ -141,9 +150,17 @@ const NewsPaper = ({ readBy }) => {
           </Masonry>
         </>
       )}
+      {(isCtryCatLaoding || isPublLaoding) && <p>Loading</p>}
     </div>
   )
 }
+
+// 當捲軸到底部時，如果 total Result 大於目前 NewsList 長度
+// fetch 下一頁，然後要 Loading 圖，然後把下一頁加到 NewsList 裡
+
+// 排序功能
+
+// 客人自己搜尋功能
 
 NewsPaper.propTypes = {
   readBy: PropTypes.string.isRequired,

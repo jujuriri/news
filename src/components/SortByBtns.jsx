@@ -1,6 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { makeStyles, Button, Typography } from '@material-ui/core'
+import { Button } from '@material-ui/core'
 
 const SortByBtns = () => {
   return (
