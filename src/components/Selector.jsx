@@ -27,7 +27,6 @@ const Selector = ({ name, options, changeHandler, selected }) => {
   const [hasErr, setHasErr] = useState(false)
   useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth)
-    console.log('inputLabel 寬', inputLabel.current.offsetWidth, inputLabel)
   }, [])
 
   const selectValid = e => {

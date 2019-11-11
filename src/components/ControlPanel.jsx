@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { makeStyles, Button } from '@material-ui/core'
 import { NewsContext } from '../context/context'
-import { useFirebase } from '../firebase'
+import useFirebase from '../firebase'
 import Selector from './Selector'
 
 const useStyles = makeStyles(theme => ({

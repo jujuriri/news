@@ -52,13 +52,4 @@ class Firebase {
 
 const useFirebase = new Firebase()
 
-const useFirebaseAuth = myFirebase => {
-  const [authUser, setAuthUser] = useState(null)
-  useEffect(() => {
-    const unlisten = myFirebase.isLoggedIn(setAuthUser)
-    return () => unlisten()
-  }, [myFirebase])
-  return authUser
-}
-
-export { useFirebase, useFirebaseAuth }
+export default useFirebase

@@ -8,7 +8,7 @@ import {
   ListItemText,
   Avatar,
 } from '@material-ui/core'
-import { useFirebase } from '../firebase'
+import useFirebase from '../firebase'
 import avatarImg from '../assets/imgs/logo.svg'
 
 const useStyles = makeStyles(theme => ({

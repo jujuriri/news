@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import { NewsContext, FirestoreContext } from '../context/context'
@@ -6,6 +6,7 @@ import Selector from './Selector'
 import Masonry from './Masonry'
 import NewsCard from './NewsCard'
 import SortByBtns from './SortByBtns'
+import { Button } from '@material-ui/core'
 
 const NewsPaper = ({ readBy }) => {
   const news = useContext(NewsContext)
@@ -21,55 +22,57 @@ const NewsPaper = ({ readBy }) => {
     console.log('NewsPaper here.')
   }, [])
 
-  useEffect(() => {
-    const getNewsCtryCat = async (ctry, cat) => {
-      const ctryCode = Array.from(news.countries)
-        .filter(country => country.name === ctry)
-        .map(selected => selected.code)
-      // call News API (/top-headlines) based on selected options or admin's Settings.
-      const res = await axios(
-        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
-        {
-          params: {
-            country: ctryCode,
-            category: cat,
-          },
-        }
-      )
-      setNewsListCtryCat(res.data.articles)
-    }
-    const getNewsPubl = async publ => {
-      const sourceId = Array.from(news.publishers)
-        .filter(publisher => publisher.name === publ)
-        .map(selected => selected.id)
-      const res = await axios(
-        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
-        {
-          params: {
-            sources: sourceId,
-          },
-        }
-      )
-      setNewsListPubl(res.data.articles)
-    }
+  // useRef to store prevState or prevProps
+  const prevAdminCountry = useRef(firestore.adminCountry)
+  const prevAdminCategory = useRef(firestore.adminCategory)
+  const prevAdminPublisher = useRef(firestore.adminPublisher)
 
+  // Init: Get News by Ctry & Cat
+  useEffect(() => {
     if (
-      firestore.adminCountry !== '' &&
-      firestore.adminCategory !== '' &&
-      readBy === 'Country and Category'
+      prevAdminCountry.current !== firestore.adminCountry &&
+      prevAdminCategory.current !== firestore.adminCategory
     ) {
-      getNewsCtryCat(firestore.adminCountry, firestore.adminCategory)
-    } else if (firestore.adminPublisher !== '' && readBy === 'Publisher') {
-      getNewsPubl(firestore.adminPublisher)
+      const getNewsCtryCat = async () => {
+        const ctryCode = Array.from(news.countries)
+          .filter(country => country.name === firestore.adminCountry)
+          .map(selected => selected.code)
+        // call News API (/top-headlines) based on selected options or admin's Settings.
+        const res = await axios(
+          `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
+          {
+            params: {
+              country: ctryCode,
+              category: firestore.adminCategory,
+            },
+          }
+        )
+        setNewsListCtryCat(res.data.articles)
+      }
+      getNewsCtryCat()
     }
-  }, [
-    firestore.adminCategory,
-    firestore.adminCountry,
-    firestore.adminPublisher,
-    news.countries,
-    news.publishers,
-    readBy,
-  ])
+  }, [firestore.adminCountry, firestore.adminCategory, news.countries, readBy])
+
+  // Init: Get News by Publisher
+  useEffect(() => {
+    if (prevAdminPublisher.current !== firestore.adminPublisher) {
+      const getNewsPubl = async () => {
+        const sourceId = Array.from(news.publishers)
+          .filter(publisher => publisher.name === firestore.adminPublisher)
+          .map(selected => selected.id)
+        const res = await axios(
+          `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
+          {
+            params: {
+              sources: sourceId,
+            },
+          }
+        )
+        setNewsListPubl(res.data.articles)
+      }
+      getNewsPubl()
+    }
+  }, [firestore.adminPublisher, news.publishers, readBy])
 
   const checkImgUrl = url => {
     if (!url) {
@@ -94,7 +97,8 @@ const NewsPaper = ({ readBy }) => {
             selected={selectedCat}
             changeHandler={val => setSelectedCat(val)}
           />
-          <SortByBtns sortNews={() => console.log('SortNews Func')} />
+          <Button variant="outlined">Search</Button>
+          <SortByBtns />
           <Masonry>
             {newsListCtryCat.map((n, i) => {
               return (
@@ -119,6 +123,8 @@ const NewsPaper = ({ readBy }) => {
             selected={selectedPubl}
             changeHandler={val => setSelectedPubl(val)}
           />
+          <Button variant="outlined">Search</Button>
+          <SortByBtns />
           <Masonry>
             {newsListPubl.map((n, i) => {
               return (
