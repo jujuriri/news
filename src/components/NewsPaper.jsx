@@ -1,17 +1,17 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
+import { Button } from '@material-ui/core'
 import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
 import Masonry from './Masonry'
 import NewsCard from './NewsCard'
 import SortByBtns from './SortByBtns'
-import { Button } from '@material-ui/core'
 
 const NewsPaper = ({ readBy }) => {
   const news = useContext(NewsContext)
   const firestore = useContext(FirestoreContext)
-
+  const [isAdminSetting, setIsAdminSetting] = useState(true)
   const [selectedCtry, setSelectedCtry] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
   const [selectedPubl, setSelectedPubl] = useState('')
@@ -25,9 +25,6 @@ const NewsPaper = ({ readBy }) => {
   }, [])
 
   // useRef to store prevState or prevProps
-  const prevAdminCountry = useRef(firestore.adminCountry)
-  const prevAdminCategory = useRef(firestore.adminCategory)
-  const prevAdminPublisher = useRef(firestore.adminPublisher)
   const prevSelectedCtry = useRef(selectedCtry)
   const prevSelectedCat = useRef(selectedCat)
   const prevSelectedPubl = useRef(selectedPubl)
@@ -51,14 +48,31 @@ const NewsPaper = ({ readBy }) => {
       )
       setNewsListCtryCat(res.data.articles)
     }
-    if (
-      prevAdminCountry.current !== firestore.adminCountry &&
-      prevAdminCategory.current !== firestore.adminCategory
-    ) {
-      getNewsCtryCat(firestore.adminCountry, firestore.adminCategory)
-      setIsCtryCatLoading(false)
+    if (firestore.adminCountry !== '' && firestore.adminCategory !== '' && isAdminSetting) {
+      setSelectedCtry(firestore.adminCountry)
+      setSelectedCat(firestore.adminCategory)
     }
-  }, [firestore.adminCountry, firestore.adminCategory, news.countries, readBy])
+    if (prevSelectedCtry.current !== selectedCtry && prevSelectedCat.current !== selectedCat) {
+      getNewsCtryCat(firestore.adminCountry, firestore.adminCategory)
+    }
+    if (newsListCtryCat.length > 0) {
+      setIsCtryCatLoading(false)
+      setIsAdminSetting(false)
+    }
+    return () => {
+      setSelectedCtry('')
+      setSelectedCat('')
+    }
+  }, [
+    firestore.adminCountry,
+    firestore.adminCategory,
+    news.countries,
+    readBy,
+    selectedCtry,
+    selectedCat,
+    newsListCtryCat.length,
+    isAdminSetting,
+  ])
 
   // Init: Get News by Publisher
   useEffect(() => {
@@ -77,11 +91,20 @@ const NewsPaper = ({ readBy }) => {
       )
       setNewsListPubl(res.data.articles)
     }
-    if (prevAdminPublisher.current !== firestore.adminPublisher) {
-      getNewsPubl(firestore.adminPublisher)
-      setIsPublLoading(false)
+    if (firestore.adminPublisher !== '' && isAdminSetting) {
+      setSelectedPubl(firestore.adminPublisher)
     }
-  }, [firestore.adminPublisher, news.publishers, readBy])
+    if (prevSelectedPubl.current !== selectedPubl) {
+      getNewsPubl(firestore.adminPublisher)
+    }
+    if (newsListPubl.length > 0) {
+      setIsPublLoading(false)
+      setIsAdminSetting(false)
+    }
+    return () => {
+      setSelectedPubl('')
+    }
+  }, [firestore.adminPublisher, isAdminSetting, news.publishers, newsListPubl.length, readBy, selectedPubl])
 
   const checkImgUrl = url => {
     if (!url) {

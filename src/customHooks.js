@@ -12,4 +12,11 @@ const useFirebaseAuth = myFirebase => {
   return authUser
 }
 
-export { useFirebaseAuth }
+const useAsync = (effect, inputs) => {
+  useEffect(() => {
+    effect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, inputs)
+}
+
+export { useFirebaseAuth, useAsync }

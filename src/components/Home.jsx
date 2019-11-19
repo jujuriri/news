@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core'
-import ReadByTabs from './ReadByTabs'
 import NewsPaper from './NewsPaper'
 
 // Get admin settings from firestore first,
@@ -26,19 +26,21 @@ const useStyles = makeStyles(theme => ({
 const Home = () => {
   const classes = useStyles()
 
-  const readBy = ['Country and Category', 'Publisher']
+  const [readBy, setReadBy] = useState('')
+  const location = useLocation()
 
   useEffect(() => {
-    console.log('Home here!')
-  }, [])
+    console.log('Home here! location: ', location)
+    if (location.pathname === '/') {
+      setReadBy('Country and Category')
+    } else if (location.pathname === '/publ') {
+      setReadBy('Publisher')
+    }
+  }, [location])
 
   return (
     <div className={classes.container}>
-      <ReadByTabs>
-        {readBy.map(rb => {
-          return <NewsPaper readBy={rb} key={`NewsPaper-${rb}`} />
-        })}
-      </ReadByTabs>
+      <NewsPaper readBy={readBy} />
     </div>
   )
 }
