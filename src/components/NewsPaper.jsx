@@ -1,7 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import { Button } from '@material-ui/core'
 import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
 import Masonry from './Masonry'
@@ -52,17 +51,24 @@ const NewsPaper = ({ readBy }) => {
       setSelectedCtry(firestore.adminCountry)
       setSelectedCat(firestore.adminCategory)
     }
-    if (prevSelectedCtry.current !== selectedCtry && prevSelectedCat.current !== selectedCat) {
-      getNewsCtryCat(firestore.adminCountry, firestore.adminCategory)
+    if (
+      prevSelectedCtry.current !== selectedCtry &&
+      prevSelectedCat.current !== selectedCat &&
+      selectedCtry !== '' &&
+      selectedCat !== ''
+    ) {
+      console.log('前國家', prevSelectedCtry.current, '現國家', selectedCtry)
+      console.log('前分類', prevSelectedCtry.current, '現分類', selectedCat)
+      getNewsCtryCat(selectedCtry, selectedCat)
     }
     if (newsListCtryCat.length > 0) {
       setIsCtryCatLoading(false)
       setIsAdminSetting(false)
     }
-    return () => {
-      setSelectedCtry('')
-      setSelectedCat('')
-    }
+    // return () => {
+    //   setSelectedCtry('')
+    //   setSelectedCat('')
+    // }
   }, [
     firestore.adminCountry,
     firestore.adminCategory,
@@ -94,23 +100,48 @@ const NewsPaper = ({ readBy }) => {
     if (firestore.adminPublisher !== '' && isAdminSetting) {
       setSelectedPubl(firestore.adminPublisher)
     }
-    if (prevSelectedPubl.current !== selectedPubl) {
-      getNewsPubl(firestore.adminPublisher)
+    if (prevSelectedPubl.current !== selectedPubl && selectedPubl !== '') {
+      getNewsPubl(selectedPubl)
     }
     if (newsListPubl.length > 0) {
       setIsPublLoading(false)
       setIsAdminSetting(false)
     }
-    return () => {
-      setSelectedPubl('')
-    }
-  }, [firestore.adminPublisher, isAdminSetting, news.publishers, newsListPubl.length, readBy, selectedPubl])
+    // return () => {
+    //   setSelectedPubl('')
+    // }
+  }, [
+    firestore.adminPublisher,
+    isAdminSetting,
+    news.publishers,
+    newsListPubl.length,
+    readBy,
+    selectedPubl,
+  ])
 
   const checkImgUrl = url => {
     if (!url) {
       return 'https://source.unsplash.com/random/300x400'
     }
     return url
+  }
+
+  const changeCtry = value => {
+    if (!isAdminSetting) {
+      setSelectedCtry(value)
+    }
+  }
+
+  const changeCat = value => {
+    if (!isAdminSetting) {
+      setSelectedCat(value)
+    }
+  }
+
+  const changePubl = value => {
+    if (!isAdminSetting) {
+      setSelectedPubl(value)
+    }
   }
 
   return (
@@ -121,15 +152,14 @@ const NewsPaper = ({ readBy }) => {
             name="Country"
             options={news.countries}
             selected={selectedCtry}
-            changeHandler={val => setSelectedCtry(val)}
+            changeHandler={changeCtry}
           />
           <Selector
             name="Category"
             options={news.categories}
             selected={selectedCat}
-            changeHandler={val => setSelectedCat(val)}
+            changeHandler={changeCat}
           />
-          <Button variant="outlined">Search</Button>
           <SortByBtns />
           <Masonry>
             {newsListCtryCat.map((n, i) => {
@@ -153,9 +183,8 @@ const NewsPaper = ({ readBy }) => {
             name="Publisher"
             options={news.publishers}
             selected={selectedPubl}
-            changeHandler={val => setSelectedPubl(val)}
+            changeHandler={changePubl}
           />
-          <Button variant="outlined">Search</Button>
           <SortByBtns />
           <Masonry>
             {newsListPubl.map((n, i) => {
@@ -180,10 +209,8 @@ const NewsPaper = ({ readBy }) => {
 
 // 當捲軸到底部時，如果 total Result 大於目前 NewsList 長度
 // fetch 下一頁，然後要 Loading 圖，然後把下一頁加到 NewsList 裡
-
+// 加上 useCallback 要正確使用
 // 排序功能
-
-// 客人自己搜尋功能
 
 NewsPaper.propTypes = {
   readBy: PropTypes.string.isRequired,
