@@ -1,15 +1,26 @@
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
+import { makeStyles } from '@material-ui/core'
+import { usePrevious, useWindowWidth } from '../customHooks'
 import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
 import Masonry from './Masonry'
 import NewsCard from './NewsCard'
 import SortByBtns from './SortByBtns'
 
+const useStyles = makeStyles(theme => ({
+  newsPaper: {
+    margin: theme.spacing(0, 1),
+    padding: theme.spacing(0, 1),
+  },
+}))
+
 const NewsPaper = ({ readBy }) => {
   const news = useContext(NewsContext)
   const firestore = useContext(FirestoreContext)
+  const classes = useStyles()
+
   const [isAdminSetting, setIsAdminSetting] = useState(true)
   const [selectedCtry, setSelectedCtry] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
@@ -20,13 +31,26 @@ const NewsPaper = ({ readBy }) => {
   const [newsListPubl, setNewsListPubl] = useState([])
 
   useEffect(() => {
-    console.log('NewsPaper here.')
+    console.log('Home here!')
   }, [])
 
-  // useRef to store prevState or prevProps
-  const prevSelectedCtry = useRef(selectedCtry)
-  const prevSelectedCat = useRef(selectedCat)
-  const prevSelectedPubl = useRef(selectedPubl)
+  const windowWidth = useWindowWidth()
+  const [colNum, setColNum] = useState(0)
+  useEffect(() => {
+    if (windowWidth < 600) {
+      setColNum(1)
+    } else if (windowWidth < 900) {
+      setColNum(2)
+    } else if (windowWidth < 1200) {
+      setColNum(3)
+    } else if (windowWidth < 2560) {
+      setColNum(4)
+    }
+  }, [windowWidth])
+
+  const prevSelectedCtry = usePrevious(selectedCtry)
+  const prevSelectedCat = usePrevious(selectedCat)
+  const prevSelectedPubl = usePrevious(selectedPubl)
 
   // Init: Get News by Ctry & Cat
   useEffect(() => {
@@ -51,24 +75,15 @@ const NewsPaper = ({ readBy }) => {
       setSelectedCtry(firestore.adminCountry)
       setSelectedCat(firestore.adminCategory)
     }
-    if (
-      prevSelectedCtry.current !== selectedCtry &&
-      prevSelectedCat.current !== selectedCat &&
-      selectedCtry !== '' &&
-      selectedCat !== ''
-    ) {
-      console.log('前國家', prevSelectedCtry.current, '現國家', selectedCtry)
-      console.log('前分類', prevSelectedCtry.current, '現分類', selectedCat)
-      getNewsCtryCat(selectedCtry, selectedCat)
+    if (selectedCtry !== '' && selectedCat !== '') {
+      if (prevSelectedCtry !== selectedCtry || prevSelectedCat !== selectedCat) {
+        getNewsCtryCat(selectedCtry, selectedCat)
+      }
     }
     if (newsListCtryCat.length > 0) {
       setIsCtryCatLoading(false)
       setIsAdminSetting(false)
     }
-    // return () => {
-    //   setSelectedCtry('')
-    //   setSelectedCat('')
-    // }
   }, [
     firestore.adminCountry,
     firestore.adminCategory,
@@ -78,6 +93,8 @@ const NewsPaper = ({ readBy }) => {
     selectedCat,
     newsListCtryCat.length,
     isAdminSetting,
+    prevSelectedCtry,
+    prevSelectedCat,
   ])
 
   // Init: Get News by Publisher
@@ -100,31 +117,22 @@ const NewsPaper = ({ readBy }) => {
     if (firestore.adminPublisher !== '' && isAdminSetting) {
       setSelectedPubl(firestore.adminPublisher)
     }
-    if (prevSelectedPubl.current !== selectedPubl && selectedPubl !== '') {
+    if (prevSelectedPubl !== selectedPubl && selectedPubl !== '') {
       getNewsPubl(selectedPubl)
     }
     if (newsListPubl.length > 0) {
       setIsPublLoading(false)
       setIsAdminSetting(false)
     }
-    // return () => {
-    //   setSelectedPubl('')
-    // }
   }, [
     firestore.adminPublisher,
     isAdminSetting,
     news.publishers,
     newsListPubl.length,
+    prevSelectedPubl,
     readBy,
     selectedPubl,
   ])
-
-  const checkImgUrl = url => {
-    if (!url) {
-      return 'https://source.unsplash.com/random/300x400'
-    }
-    return url
-  }
 
   const changeCtry = value => {
     if (!isAdminSetting) {
@@ -145,7 +153,7 @@ const NewsPaper = ({ readBy }) => {
   }
 
   return (
-    <div>
+    <div className={classes.newsPaper}>
       {readBy === 'Country and Category' && !isCtryCatLaoding && (
         <>
           <Selector
@@ -161,12 +169,12 @@ const NewsPaper = ({ readBy }) => {
             changeHandler={changeCat}
           />
           <SortByBtns />
-          <Masonry>
+          <Masonry colNum={colNum}>
             {newsListCtryCat.map((n, i) => {
               return (
                 <NewsCard
                   key={`NewsCard-CC-${i}`}
-                  imgUrl={checkImgUrl(n.urlToImage)}
+                  imgUrl={n.urlToImage}
                   newsTitle={n.title}
                   newsSummary={n.description}
                   publishedAt={n.publishedAt}
@@ -186,7 +194,7 @@ const NewsPaper = ({ readBy }) => {
             changeHandler={changePubl}
           />
           <SortByBtns />
-          <Masonry>
+          <Masonry colNum={colNum}>
             {newsListPubl.map((n, i) => {
               return (
                 <NewsCard

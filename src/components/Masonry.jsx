@@ -10,9 +10,14 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
+  mansoryCols: {
+    margin: theme.spacing(0, 1),
+    flex: '0 1 auto',
+  },
 }))
 
 const Masonry = ({ colNum, children }) => {
+  console.log('colNum', colNum)
   const classes = useStyles()
   const cols = {}
   const arranged = []
@@ -26,19 +31,19 @@ const Masonry = ({ colNum, children }) => {
     cols[`col${colIdx}`].push(children[i])
   }
   // concat each column to an array in order to render
-  for (let i = 0; i < 3; i += 1) {
-    arranged.push(<div key={`col-${i}`}>{cols[`col${i}`]}</div>)
+  for (let i = 0; i < colNum; i += 1) {
+    arranged.push(
+      <div key={`col-${i}`} className={classes.mansoryCols}>
+        {cols[`col${i}`]}
+      </div>
+    )
   }
 
   return <div className={classes.mansory}>{arranged}</div>
 }
 
-Masonry.defaultProps = {
-  colNum: 3,
-}
-
 Masonry.propTypes = {
-  colNum: PropTypes.number,
+  colNum: PropTypes.number.isRequired,
   children: PropTypes.arrayOf(PropTypes.element).isRequired,
 }
 

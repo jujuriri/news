@@ -15,6 +15,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'center',
     alignItems: 'center',
     margin: 'auto',
+    padding: theme.spacing(0, 1),
   },
   button: {
     margin: theme.spacing(1),

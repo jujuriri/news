@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // The Powerful Helpers: Custom Hooks! :DDDD
 
@@ -12,11 +12,24 @@ const useFirebaseAuth = myFirebase => {
   return authUser
 }
 
-const useAsync = (effect, inputs) => {
+const usePrevious = value => {
+  const ref = useRef()
   useEffect(() => {
-    effect()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, inputs)
+    ref.current = value
+  })
+  return ref.current
 }
 
-export { useFirebaseAuth, useAsync }
+const useWindowWidth = () => {
+  const [width, setWidth] = useState(window.innerWidth)
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth)
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  })
+  return width
+}
+
+export { useFirebaseAuth, usePrevious, useWindowWidth }

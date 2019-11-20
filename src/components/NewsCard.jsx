@@ -13,9 +13,9 @@ import {
 
 const useStyles = makeStyles(theme => ({
   card: {
-    margin: theme.spacing(1, 1, 2, 1),
+    margin: theme.spacing(1, 0, 2),
     width: '100%',
-    maxWidth: 300,
+    maxWidth: 320,
   },
 }))
 
@@ -28,7 +28,7 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) =
           component="img"
           alt="Contemplative Reptile"
           height="140"
-          image={imgUrl}
+          image={imgUrl || 'https://source.unsplash.com/random/300x400'}
           title={newsTitle}
         />
         <CardContent>
