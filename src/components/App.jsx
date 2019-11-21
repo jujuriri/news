@@ -18,11 +18,15 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2),
   },
   toolbar: {
+    flexFlow: 'row wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    maxWidth: '70%',
-    alignSelf: 'center',
+    maxWidth: '100%',
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(2, 7),
+      justifyContent: 'center',
+    },
   },
   logoBtn: {
     fontWeight: 'bold',
@@ -36,6 +40,10 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     whiteSpace: 'nowrap',
     borderRadius: 3,
+    [theme.breakpoints.down('sm')]: {
+      flex: '0 1 80%',
+      margin: theme.spacing(0.5, 2),
+    },
   },
   loginBtn: {
     border: '1px solid silver',
@@ -52,7 +60,7 @@ function App() {
   return (
     <>
       <CssBaseline />
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <AppBar position="static" color="inherit" className={classes.appbar}>
           <Toolbar className={classes.toolbar}>
             <Typography className={`${classes.navBtn} ${classes.logoBtn}`}>Read News By</Typography>

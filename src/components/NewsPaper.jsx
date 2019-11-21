@@ -34,16 +34,17 @@ const NewsPaper = ({ readBy }) => {
     console.log('Home here!')
   }, [])
 
+  // RWD
   const windowWidth = useWindowWidth()
   const [colNum, setColNum] = useState(0)
   useEffect(() => {
     if (windowWidth < 600) {
       setColNum(1)
-    } else if (windowWidth < 900) {
+    } else if (windowWidth < 960) {
       setColNum(2)
-    } else if (windowWidth < 1200) {
+    } else if (windowWidth < 1280) {
       setColNum(3)
-    } else if (windowWidth < 2560) {
+    } else if (windowWidth < 1920) {
       setColNum(4)
     }
   }, [windowWidth])
