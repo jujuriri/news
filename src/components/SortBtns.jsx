@@ -10,19 +10,20 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const SortByBtns = () => {
+const SortBtns = (byDate, byTitle) => {
+  console.log(byTitle)
   const classes = useStyles()
   return (
     <>
       <Typography className={classes.sortLabel}>Sort by</Typography>
-      <Button variant="outlined" className={classes.sortBtn}>
+      <Button variant="outlined" className={classes.sortBtn} onClick={() => byDate()}>
         Date
       </Button>
-      <Button variant="outlined" className={classes.sortBtn}>
+      <Button variant="outlined" className={classes.sortBtn} onClick={() => byTitle()}>
         Title (A-Z)
       </Button>
     </>
   )
 }
 
-export default SortByBtns
+export default SortBtns

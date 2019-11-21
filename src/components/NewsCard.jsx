@@ -20,6 +20,13 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) => {
+  const checkedImgUrl = url => {
+    if (url === null || url === 'null' || !url) {
+      return 'https://source.unsplash.com/random/300x400'
+    }
+    return url
+  }
+
   const classes = useStyles()
   return (
     <Card className={classes.card}>
@@ -28,7 +35,7 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) =
           component="img"
           alt="Contemplative Reptile"
           height="140"
-          image={imgUrl || 'https://source.unsplash.com/random/300x400'}
+          image={checkedImgUrl(imgUrl)}
           title={newsTitle}
         />
         <CardContent>

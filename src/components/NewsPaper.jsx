@@ -7,7 +7,7 @@ import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
 import Masonry from './Masonry'
 import NewsCard from './NewsCard'
-import SortByBtns from './SortByBtns'
+import SortBtns from './SortBtns'
 
 const useStyles = makeStyles(theme => ({
   newsPaper: {
@@ -153,6 +153,14 @@ const NewsPaper = ({ readBy }) => {
     }
   }
 
+  const sortByDate = () => {
+    console.log('sortByDate')
+  }
+
+  const sortByTitle = () => {
+    console.log('sortByTitle')
+  }
+
   return (
     <div className={classes.newsPaper}>
       {readBy === 'Country and Category' && !isCtryCatLaoding && (
@@ -169,7 +177,7 @@ const NewsPaper = ({ readBy }) => {
             selected={selectedCat}
             changeHandler={changeCat}
           />
-          <SortByBtns />
+          <SortBtns byDate={() => sortByDate()} byTitle={sortByTitle()} />
           <Masonry colNum={colNum}>
             {newsListCtryCat.map((n, i) => {
               return (
@@ -194,7 +202,7 @@ const NewsPaper = ({ readBy }) => {
             selected={selectedPubl}
             changeHandler={changePubl}
           />
-          <SortByBtns />
+          <SortBtns byDate={() => sortByDate()} byTitle={() => sortByTitle()} />
           <Masonry colNum={colNum}>
             {newsListPubl.map((n, i) => {
               return (
