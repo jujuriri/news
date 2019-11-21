@@ -17,7 +17,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const Masonry = ({ colNum, children }) => {
-  console.log('colNum', colNum)
   const classes = useStyles()
   const cols = {}
   const arranged = []

@@ -18,14 +18,29 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2),
   },
   toolbar: {
-    flexFlow: 'row wrap',
+    flexFlow: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     maxWidth: '100%',
     [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(2, 7),
+      padding: theme.spacing(2, 3),
       justifyContent: 'center',
+      flexFlow: 'column',
+    },
+  },
+  pageLabel: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    flex: '1 1 auto',
+    '& a': {
+      marginRight: theme.spacing(2),
+      flex: '0 1 10%',
+    },
+    [theme.breakpoints.down('sm')]: {
+      flexFlow: 'column',
+      alignItems: 'center',
+      width: '100%',
     },
   },
   logoBtn: {
@@ -33,20 +48,27 @@ const useStyles = makeStyles(theme => ({
     fontFamily: 'Meiryo',
     cursor: 'pointer',
     fontSize: '20px',
+    margin: theme.spacing(0, 5, 0, 1),
+    [theme.breakpoints.down('sm')]: {
+      margin: theme.spacing(1, 0),
+    },
   },
   navBtn: {
-    flex: '0 0 8%',
-    margin: theme.spacing(0, 2),
     textAlign: 'center',
     whiteSpace: 'nowrap',
     borderRadius: 3,
     [theme.breakpoints.down('sm')]: {
-      flex: '0 1 80%',
       margin: theme.spacing(0.5, 2),
     },
   },
   loginBtn: {
+    flex: '0 1 120px',
     border: '1px solid silver',
+    margin: theme.spacing(0, 1, 0, 5),
+    [theme.breakpoints.down('sm')]: {
+      margin: theme.spacing(1, 0),
+      flex: '0 1 auto',
+    },
   },
 }))
 
@@ -64,25 +86,27 @@ function App() {
         <AppBar position="static" color="inherit" className={classes.appbar}>
           <Toolbar className={classes.toolbar}>
             <Typography className={`${classes.navBtn} ${classes.logoBtn}`}>Read News By</Typography>
-            <ListItem
-              className={classes.navBtn}
-              button
-              key="Country and Category"
-              component={NavLink}
-              exact
-              to="/"
-            >
-              <ListItemText primary="Country and Category" />
-            </ListItem>
-            <ListItem
-              className={classes.navBtn}
-              button
-              key="Publisher"
-              component={NavLink}
-              to="/publ"
-            >
-              <ListItemText primary="Publisher" />
-            </ListItem>
+            <div className={classes.pageLabel}>
+              <ListItem
+                className={classes.navBtn}
+                button
+                key="Country and Category"
+                component={NavLink}
+                exact
+                to="/"
+              >
+                <ListItemText primary="Country and Category" />
+              </ListItem>
+              <ListItem
+                className={classes.navBtn}
+                button
+                key="Publisher"
+                component={NavLink}
+                to="/publ"
+              >
+                <ListItemText primary="Publisher" />
+              </ListItem>
+            </div>
             <ListItem
               className={`${classes.navBtn} ${classes.loginBtn}`}
               button
