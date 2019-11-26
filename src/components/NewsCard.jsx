@@ -10,12 +10,21 @@ import {
   CardContent,
   Button,
 } from '@material-ui/core'
+import moment from 'moment-timezone'
 
 const useStyles = makeStyles(theme => ({
   card: {
     margin: theme.spacing(1, 0, 2),
     width: '100%',
-    maxWidth: 320,
+    maxWidth: 310,
+  },
+  cardActions: {
+    display: 'flex',
+    flexFlow: 'column',
+    alignItems: 'flex-end',
+  },
+  toLocalTime: {
+    margin: theme.spacing(0, 0.5, 0.5, 0),
   },
 }))
 
@@ -25,6 +34,12 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) =
       return 'https://source.unsplash.com/random/300x400'
     }
     return url
+  }
+
+  const toLocalTime = utc => {
+    const publTime = moment(`${utc}`)
+    const userTZ = moment.tz.guess(true)
+    return publTime.tz(userTZ).format('LLL')
   }
 
   const classes = useStyles()
@@ -39,7 +54,7 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) =
           title={newsTitle}
         />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
+          <Typography gutterBottom variant="h6" component="h6">
             {newsTitle}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
@@ -47,10 +62,10 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) =
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardActions>
-        <Button size="small" color="primary">
-          {publishedAt}
-        </Button>
+      <CardActions className={classes.cardActions}>
+        <Typography className={classes.toLocalTime} variant="caption" color="primary" component="p">
+          {toLocalTime(publishedAt)}
+        </Typography>
         <Button size="small" color="primary">
           {sourceName}
         </Button>
