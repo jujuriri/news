@@ -43,9 +43,42 @@ const NewsPaper = ({ readBy }) => {
   const [newsListPubl, setNewsListPubl] = useState([])
   const [sortBy, setSortBy] = useState('Date')
 
+  const prevSelectedCtry = usePrevious(selectedCtry)
+  const prevSelectedCat = usePrevious(selectedCat)
+  const prevSelectedPubl = usePrevious(selectedPubl)
+  const prevSortBy = usePrevious(sortBy)
+
+  // Wait Firebase
   useEffect(() => {
-    console.log('Home here!')
-  }, [])
+    if (
+      firestore.adminCountry !== '' &&
+      firestore.adminCategory !== '' &&
+      firestore.adminPublisher !== ''
+    ) {
+      setSelectedCtry(firestore.adminCountry)
+      setSelectedCat(firestore.adminCategory)
+      setSelectedPubl(firestore.adminPublisher)
+    }
+  }, [firestore.adminCategory, firestore.adminCountry, firestore.adminPublisher])
+
+  // Infinite Scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop !==
+        document.documentElement.offsetHeight
+      )
+        return
+      console.log('Scroll to bottom!')
+      if (readBy === 'Country and Category') {
+        setIsCtryCatLoading(true)
+      } else if (readBy === 'Publisher') {
+        setIsPublLoading(true)
+      }
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [readBy])
 
   // RWD
   const windowWidth = useWindowWidth()
@@ -61,11 +94,6 @@ const NewsPaper = ({ readBy }) => {
       setColNum(4)
     }
   }, [windowWidth])
-
-  const prevSelectedCtry = usePrevious(selectedCtry)
-  const prevSelectedCat = usePrevious(selectedCat)
-  const prevSelectedPubl = usePrevious(selectedPubl)
-  const prevSortBy = usePrevious(sortBy)
 
   // Init: Get News by Ctry & Cat
   useEffect(() => {
@@ -84,20 +112,16 @@ const NewsPaper = ({ readBy }) => {
           },
         }
       )
-      setNewsListCtryCat(res.data.articles)
-    }
-    if (firestore.adminCountry !== '' && firestore.adminCategory !== '' && isAdminSetting) {
-      setSelectedCtry(firestore.adminCountry)
-      setSelectedCat(firestore.adminCategory)
-    }
-    if (selectedCtry !== '' && selectedCat !== '') {
-      if (prevSelectedCtry !== selectedCtry && prevSelectedCat !== selectedCat) {
-        getNewsCtryCat(selectedCtry, selectedCat)
+      if (res.data.articles.length > 0) {
+        setNewsListCtryCat(res.data.articles)
+        setIsCtryCatLoading(false)
+        setIsAdminSetting(false)
+      } else {
+        throw new Error('No Articles. (CtryCat)')
       }
     }
-    if (newsListCtryCat.length > 0) {
-      setIsCtryCatLoading(false)
-      setIsAdminSetting(false)
+    if (isAdminSetting && prevSelectedCtry !== selectedCtry && prevSelectedCat !== selectedCat) {
+      getNewsCtryCat(selectedCtry, selectedCat)
     }
     if (prevSortBy !== sortBy && readBy === 'Country and Category') {
       if (sortBy === 'Date') {
@@ -120,19 +144,18 @@ const NewsPaper = ({ readBy }) => {
       }
     }
   }, [
-    firestore.adminCountry,
     firestore.adminCategory,
-    news.countries,
-    readBy,
-    selectedCtry,
-    selectedCat,
-    newsListCtryCat.length,
+    firestore.adminCountry,
     isAdminSetting,
-    prevSelectedCtry,
-    prevSelectedCat,
-    prevSortBy,
-    sortBy,
+    news.countries,
     newsListCtryCat,
+    prevSelectedCat,
+    prevSelectedCtry,
+    prevSortBy,
+    readBy,
+    selectedCat,
+    selectedCtry,
+    sortBy,
   ])
 
   // Init: Get News by Publisher
@@ -150,17 +173,16 @@ const NewsPaper = ({ readBy }) => {
           },
         }
       )
-      setNewsListPubl(res.data.articles)
+      if (res.data.articles.length > 0) {
+        setNewsListPubl(res.data.articles)
+        setIsPublLoading(false)
+        setIsAdminSetting(false)
+      } else {
+        throw new Error('No Articles. (Publ)')
+      }
     }
-    if (firestore.adminPublisher !== '' && isAdminSetting) {
-      setSelectedPubl(firestore.adminPublisher)
-    }
-    if (prevSelectedPubl !== selectedPubl && selectedPubl !== '') {
+    if (isAdminSetting && readBy === 'Publisher') {
       getNewsPubl(selectedPubl)
-    }
-    if (newsListPubl.length > 0) {
-      setIsPublLoading(false)
-      setIsAdminSetting(false)
     }
     if (prevSortBy !== sortBy && readBy === 'Publisher') {
       if (sortBy === 'Date') {
@@ -178,13 +200,11 @@ const NewsPaper = ({ readBy }) => {
     firestore.adminPublisher,
     isAdminSetting,
     news.publishers,
-    newsListPubl.length,
-    prevSelectedPubl,
+    newsListPubl,
+    prevSortBy,
     readBy,
     selectedPubl,
-    prevSortBy,
     sortBy,
-    newsListPubl,
   ])
 
   const changeCtry = value => {
