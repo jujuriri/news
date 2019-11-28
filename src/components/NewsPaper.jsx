@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import { makeStyles, Button } from '@material-ui/core'
@@ -12,7 +12,7 @@ import Loader from './Loader'
 
 const useStyles = makeStyles(theme => ({
   newsPaper: {
-    margin: theme.spacing(0, 1),
+    margin: theme.spacing(0, 1, 7, 1),
     padding: theme.spacing(0, 1),
   },
   searchBar: {
@@ -37,15 +37,16 @@ const NewsPaper = ({ readBy }) => {
   const [selectedCtry, setSelectedCtry] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
   const [selectedPubl, setSelectedPubl] = useState('')
-  const [isCtryCatLaoding, setIsCtryCatLoading] = useState(true)
-  const [isPublLaoding, setIsPublLoading] = useState(true)
-  const [newsListCtryCat, setNewsListCtryCat] = useState([])
-  const [newsListPubl, setNewsListPubl] = useState([])
+  const [isLaoding, setIsLoading] = useState(true)
+  const [newsList, setNewsList] = useState([])
+  const [totalResults, setTotalResults] = useState(0)
+  const [curPage, setCurPage] = useState(1)
   const [sortBy, setSortBy] = useState('Date')
 
   const prevSelectedCtry = usePrevious(selectedCtry)
   const prevSelectedCat = usePrevious(selectedCat)
   const prevSelectedPubl = usePrevious(selectedPubl)
+  const prevCurPage = usePrevious(curPage)
   const prevSortBy = usePrevious(sortBy)
 
   // Wait Firebase
@@ -61,24 +62,143 @@ const NewsPaper = ({ readBy }) => {
     }
   }, [firestore.adminCategory, firestore.adminCountry, firestore.adminPublisher])
 
-  // Infinite Scroll
+  // Function for fetching news
+  const getNews = useCallback(
+    async (ctry = null, cat = null, publ = null, pageNum = null) => {
+      // Find out country code
+      const ctryCode = Array.from(news.countries)
+        .filter(country => country.name === ctry)
+        .map(selected => selected.code)
+      // Find out publisher ID
+      const sourceId = Array.from(news.publishers)
+        .filter(publisher => publisher.name === publ)
+        .map(selected => selected.id)
+      // AJAX
+      const res = await axios(
+        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
+        {
+          params: {
+            country: ctryCode,
+            category: cat,
+            sources: sourceId,
+            page: pageNum,
+          },
+        }
+      )
+      if (res.data.articles.length > 0) {
+        if (curPage > 1) {
+          const moreNews = [...newsList].concat(res.data.articles)
+          setNewsList(moreNews)
+        } else {
+          setNewsList(res.data.articles)
+        }
+        setTotalResults(res.data.totalResults)
+        setIsLoading(false)
+        setIsAdminSetting(false)
+      } else {
+        throw new Error('No Articles.')
+      }
+    },
+    [curPage, news.countries, news.publishers, newsList]
+  )
+
+  useEffect(() => {
+    // If user open Country and Category page
+    if (readBy === 'Country and Category') {
+      if (isAdminSetting && prevSelectedCtry !== selectedCtry && prevSelectedCat !== selectedCat) {
+        getNews(selectedCtry, selectedCat)
+      }
+      if (prevSortBy !== sortBy) {
+        if (sortBy === 'Date') {
+          console.log('地方日期換換換')
+        } else if (sortBy === 'Title') {
+          console.log('地方標題換換換')
+          let lang
+          if (selectedCtry === 'Taiwan') {
+            lang = 'zh-Hant'
+          } else if (selectedCtry === 'Japan') {
+            lang = 'jp'
+          } else {
+            lang = null
+          }
+          const unSortNews = [...newsList]
+          const sortedNews = unSortNews.sort((a, b) => {
+            return a.title.localeCompare(b.title, `${lang}`)
+          })
+          setNewsList(sortedNews)
+        }
+      }
+    }
+    // If users open Publisher page
+    if (readBy === 'Publisher') {
+      if (isAdminSetting && prevSelectedPubl !== selectedPubl) {
+        getNews(null, null, selectedPubl)
+      }
+      if (prevSortBy !== sortBy) {
+        if (sortBy === 'Date') {
+          console.log('出版商日期換換換')
+        } else if (sortBy === 'Title') {
+          console.log('出版商標題換換換')
+          const unSortNews = [...newsList]
+          const sortedNews = unSortNews.sort((a, b) => {
+            return a.title.localeCompare(b.title)
+          })
+          setNewsList(sortedNews)
+        }
+      }
+    }
+  }, [
+    getNews,
+    isAdminSetting,
+    news.countries,
+    news.publishers,
+    newsList,
+    prevSelectedCat,
+    prevSelectedCtry,
+    prevSelectedPubl,
+    prevSortBy,
+    readBy,
+    selectedCat,
+    selectedCtry,
+    selectedPubl,
+    sortBy,
+  ])
+
+  // Infinite Scroll (Pagination)
   useEffect(() => {
     const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop !==
-        document.documentElement.offsetHeight
-      )
-        return
-      console.log('Scroll to bottom!')
-      if (readBy === 'Country and Category') {
-        setIsCtryCatLoading(true)
-      } else if (readBy === 'Publisher') {
-        setIsPublLoading(true)
+      if (window.innerHeight + window.scrollY === document.body.offsetHeight && !isLaoding) {
+        if (totalResults > newsList.length) {
+          setCurPage(curPage + 1)
+        } else {
+          console.log('No more page.')
+        }
       }
     }
     window.addEventListener('scroll', handleScroll)
+
+    if (prevCurPage !== curPage) {
+      setIsLoading(true)
+      if (readBy === 'Country and Category') {
+        getNews(selectedCtry, selectedCat, null, curPage)
+      } else if (readBy === 'Publisher') {
+        getNews(null, null, selectedPubl, curPage)
+      }
+    }
+
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [readBy])
+  }, [
+    curPage,
+    getNews,
+    isLaoding,
+    newsList.length,
+    prevCurPage,
+    readBy,
+    selectedCat,
+    selectedCtry,
+    selectedPubl,
+    totalResults,
+  ])
 
   // RWD
   const windowWidth = useWindowWidth()
@@ -94,118 +214,6 @@ const NewsPaper = ({ readBy }) => {
       setColNum(4)
     }
   }, [windowWidth])
-
-  // Init: Get News by Ctry & Cat
-  useEffect(() => {
-    const getNewsCtryCat = async (ctry, cat, pageNum = null) => {
-      const ctryCode = Array.from(news.countries)
-        .filter(country => country.name === ctry)
-        .map(selected => selected.code)
-      // call News API (/top-headlines) based on selected options or admin's Settings.
-      const res = await axios(
-        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
-        {
-          params: {
-            country: ctryCode,
-            category: cat,
-            page: pageNum,
-          },
-        }
-      )
-      if (res.data.articles.length > 0) {
-        setNewsListCtryCat(res.data.articles)
-        setIsCtryCatLoading(false)
-        setIsAdminSetting(false)
-      } else {
-        throw new Error('No Articles. (CtryCat)')
-      }
-    }
-    if (isAdminSetting && prevSelectedCtry !== selectedCtry && prevSelectedCat !== selectedCat) {
-      getNewsCtryCat(selectedCtry, selectedCat)
-    }
-    if (prevSortBy !== sortBy && readBy === 'Country and Category') {
-      if (sortBy === 'Date') {
-        console.log('地方日期換換換')
-      } else if (sortBy === 'Title') {
-        console.log('地方標題換換換')
-        let lang
-        if (selectedCtry === 'Taiwan') {
-          lang = 'zh-Hant'
-        } else if (selectedCtry === 'Japan') {
-          lang = 'jp'
-        } else {
-          lang = null
-        }
-        const unSortNews = [...newsListCtryCat]
-        const sortedNews = unSortNews.sort((a, b) => {
-          return a.title.localeCompare(b.title, `${lang}`)
-        })
-        setNewsListCtryCat(sortedNews)
-      }
-    }
-  }, [
-    firestore.adminCategory,
-    firestore.adminCountry,
-    isAdminSetting,
-    news.countries,
-    newsListCtryCat,
-    prevSelectedCat,
-    prevSelectedCtry,
-    prevSortBy,
-    readBy,
-    selectedCat,
-    selectedCtry,
-    sortBy,
-  ])
-
-  // Init: Get News by Publisher
-  useEffect(() => {
-    const getNewsPubl = async (publ, pageNum = null) => {
-      const sourceId = Array.from(news.publishers)
-        .filter(publisher => publisher.name === publ)
-        .map(selected => selected.id)
-      const res = await axios(
-        `https://newsapi.org/v2/top-headlines?apiKey=${process.env.REACT_APP_NEWS_API_KEY}`,
-        {
-          params: {
-            sources: sourceId,
-            page: pageNum,
-          },
-        }
-      )
-      if (res.data.articles.length > 0) {
-        setNewsListPubl(res.data.articles)
-        setIsPublLoading(false)
-        setIsAdminSetting(false)
-      } else {
-        throw new Error('No Articles. (Publ)')
-      }
-    }
-    if (isAdminSetting && readBy === 'Publisher') {
-      getNewsPubl(selectedPubl)
-    }
-    if (prevSortBy !== sortBy && readBy === 'Publisher') {
-      if (sortBy === 'Date') {
-        console.log('出版商日期換換換')
-      } else if (sortBy === 'Title') {
-        console.log('出版商標題換換換')
-        const unSortNews = [...newsListPubl]
-        const sortedNews = unSortNews.sort((a, b) => {
-          return a.title.localeCompare(b.title)
-        })
-        setNewsListPubl(sortedNews)
-      }
-    }
-  }, [
-    firestore.adminPublisher,
-    isAdminSetting,
-    news.publishers,
-    newsListPubl,
-    prevSortBy,
-    readBy,
-    selectedPubl,
-    sortBy,
-  ])
 
   const changeCtry = value => {
     if (!isAdminSetting) {
@@ -225,50 +233,55 @@ const NewsPaper = ({ readBy }) => {
     }
   }
 
-  // const userSearch = (readBy, userSetting) {
-  //   if (readBy === 'Country and Category') {
-  //     getNewsCtryCat
-  //   }
-  // }
-
   const sortByDate = () => {
-    console.log('sortByDate')
     setSortBy('Date')
   }
 
   const sortByTitle = () => {
-    console.log('sortByTitle')
     setSortBy('Title')
   }
 
   return (
     <div className={classes.newsPaper}>
-      {readBy === 'Country and Category' && !isCtryCatLaoding && (
+      {newsList.length > 0 && (
         <>
           <div className={classes.searchBar}>
-            <Selector
-              name="Country"
-              options={news.countries}
-              selected={selectedCtry}
-              changeHandler={changeCtry}
-            />
-            <Selector
-              name="Category"
-              options={news.categories}
-              selected={selectedCat}
-              changeHandler={changeCat}
-            />
+            {readBy === 'Country and Category' && (
+              <>
+                <Selector
+                  name="Country"
+                  options={news.countries}
+                  selected={selectedCtry}
+                  changeHandler={changeCtry}
+                />
+                <Selector
+                  name="Category"
+                  options={news.categories}
+                  selected={selectedCat}
+                  changeHandler={changeCat}
+                />
+              </>
+            )}
+            {readBy === 'Publisher' && (
+              <Selector
+                name="Publisher"
+                options={news.publishers}
+                selected={selectedPubl}
+                changeHandler={changePubl}
+              />
+            )}
             <Button className={classes.searchBtn} variant="outlined">
               Search
             </Button>
           </div>
           <SortBtns sortByDate={() => sortByDate()} sortByTitle={() => sortByTitle()} />
           <Masonry colNum={colNum}>
-            {newsListCtryCat.map((n, i) => {
+            {newsList.map((n, i) => {
               return (
                 <NewsCard
-                  key={`NewsCard-CC-${i}`}
+                  key={`NewsCard-${i}`}
                   imgUrl={n.urlToImage}
+                  articleUrl={n.url}
                   newsTitle={n.title}
                   newsSummary={n.description}
                   publishedAt={n.publishedAt}
@@ -279,44 +292,10 @@ const NewsPaper = ({ readBy }) => {
           </Masonry>
         </>
       )}
-      {readBy === 'Publisher' && !isPublLaoding && (
-        <>
-          <div className={classes.searchBar}>
-            <Selector
-              name="Publisher"
-              options={news.publishers}
-              selected={selectedPubl}
-              changeHandler={changePubl}
-            />
-            <Button className={classes.searchBtn} variant="outlined">
-              Search
-            </Button>
-          </div>
-          <SortBtns sortByDate={() => sortByDate()} sortByTitle={() => sortByTitle()} />
-          <Masonry colNum={colNum}>
-            {newsListPubl.map((n, i) => {
-              return (
-                <NewsCard
-                  key={`NewsCard-P-${i}`}
-                  imgUrl={n.urlToImage}
-                  newsTitle={n.title}
-                  newsSummary={n.description}
-                  publishedAt={n.publishedAt}
-                  sourceName={n.source.name}
-                />
-              )
-            })}
-          </Masonry>
-        </>
-      )}
-      {(isCtryCatLaoding || isPublLaoding) && <Loader />}
+      {isLaoding && <Loader />}
     </div>
   )
 }
-
-// 當捲軸到底部時，如果 total Result 大於目前 NewsList 長度
-// fetch 下一頁，然後要 Loading 圖，然後把下一頁加到 NewsList 裡
-// 排序功能
 
 NewsPaper.propTypes = {
   readBy: PropTypes.string.isRequired,

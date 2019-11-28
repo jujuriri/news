@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) => {
+const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, articleUrl }) => {
   const checkedImgUrl = url => {
     if (url === null || url === 'null' || !url) {
       return 'https://source.unsplash.com/random/300x400'
@@ -66,7 +66,7 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName }) =
         <Typography className={classes.toLocalTime} variant="caption" color="primary" component="p">
           {toLocalTime(publishedAt)}
         </Typography>
-        <Button size="small" color="primary">
+        <Button size="small" color="primary" onClick={() => console.log(articleUrl)}>
           {sourceName}
         </Button>
       </CardActions>
@@ -79,7 +79,8 @@ NewsCard.defaultProps = {
   newsTitle: 'I am a news title',
   newsSummary: 'I am a news summary',
   publishedAt: '0000/00/00 00:00',
-  sourceName: 'jujuriri',
+  sourceName: 'google',
+  articleUrl: 'https://google.com',
 }
 
 NewsCard.propTypes = {
@@ -88,6 +89,7 @@ NewsCard.propTypes = {
   newsSummary: PropTypes.string,
   publishedAt: PropTypes.string,
   sourceName: PropTypes.string,
+  articleUrl: PropTypes.string,
 }
 
 export default NewsCard
