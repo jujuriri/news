@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Button, Typography, makeStyles } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
@@ -23,6 +24,11 @@ const SortBtns = ({ sortByDate, sortByTitle }) => {
       </Button>
     </>
   )
+}
+
+SortBtns.propTypes = {
+  sortByDate: PropTypes.func.isRequired,
+  sortByTitle: PropTypes.func.isRequired,
 }
 
 export default SortBtns

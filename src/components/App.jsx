@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { BrowserRouter as Router, Route, NavLink, useHistory } from 'react-router-dom'
+import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
 import {
   CssBaseline,
   makeStyles,
@@ -85,7 +85,9 @@ function App() {
       <Router basename={process.env.PUBLIC_URL}>
         <AppBar position="static" color="inherit" className={classes.appbar}>
           <Toolbar className={classes.toolbar}>
-            <Typography className={`${classes.navBtn} ${classes.logoBtn}`}>Read News By</Typography>
+            <Typography className={`${classes.navBtn} ${classes.logoBtn}`}>
+              Read Top News Headlines By
+            </Typography>
             <div className={classes.pageLabel}>
               <ListItem
                 className={classes.navBtn}
