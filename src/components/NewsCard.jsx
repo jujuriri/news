@@ -29,6 +29,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, articleUrl }) => {
+  const classes = useStyles()
+
   const checkedImgUrl = url => {
     if (url === null || url === 'null' || !url) {
       return 'https://source.unsplash.com/random/300x400'
@@ -42,7 +44,10 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, art
     return publTime.tz(userTZ).format('LLL')
   }
 
-  const classes = useStyles()
+  const openArticleUrl = url => {
+    window.open(url, '_blank')
+  }
+
   return (
     <Card className={classes.card}>
       <CardActionArea>
@@ -66,7 +71,7 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, art
         <Typography className={classes.toLocalTime} variant="caption" color="primary" component="p">
           {toLocalTime(publishedAt)}
         </Typography>
-        <Button size="small" color="primary" onClick={() => console.log(articleUrl)}>
+        <Button size="small" color="primary" onClick={() => openArticleUrl(articleUrl)}>
           {sourceName}
         </Button>
       </CardActions>

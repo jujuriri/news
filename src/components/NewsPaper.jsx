@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import { makeStyles, Button } from '@material-ui/core'
+import { makeStyles, Button, Divider } from '@material-ui/core'
 import { usePrevious, useWindowWidth } from '../customHooks'
 import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
@@ -17,13 +17,15 @@ const useStyles = makeStyles(theme => ({
   },
   searchBar: {
     width: '100%',
-    height: 72,
+    height: 88,
     display: 'flex',
-    justifyContent: 'felx-start',
-    alignItems: 'center',
   },
   searchBtn: {
-    height: '77%',
+    height: '64%',
+    margin: theme.spacing(1),
+    textTransform: 'none',
+  },
+  divider: {
     margin: theme.spacing(1),
   },
 }))
@@ -274,6 +276,7 @@ const NewsPaper = ({ readBy }) => {
               Search
             </Button>
           </div>
+          <Divider className={classes.divider} />
           <SortBtns sortByDate={() => sortByDate()} sortByTitle={() => sortByTitle()} />
           <Masonry colNum={colNum}>
             {newsList.map((n, i) => {

@@ -63,8 +63,18 @@ const useStyles = makeStyles(theme => ({
   },
   loginBtn: {
     flex: '0 1 120px',
-    border: '1px solid silver',
     margin: theme.spacing(0, 1, 0, 5),
+    backgroundColor: '#007bff',
+    '&:hover': {
+      backgroundColor: '#0069d9',
+      borderColor: '#0062cc',
+      boxShadow: 'none',
+    },
+    '&:active': {
+      boxShadow: 'none',
+      backgroundColor: '#0062cc',
+      borderColor: '#005cbf',
+    },
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(1, 0),
       flex: '0 1 auto',
