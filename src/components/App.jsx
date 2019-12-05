@@ -15,18 +15,28 @@ import Admin from './Admin'
 const useStyles = makeStyles(theme => ({
   appbar: {
     boxShadow: 'unset',
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(3),
+    [theme.breakpoints.down('sm')]: {
+      paddingTop: theme.spacing(1),
+    },
   },
   toolbar: {
     flexFlow: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     width: '100%',
-    maxWidth: '100%',
+    maxWidth: 1320,
+    padding: theme.spacing(0, 1),
+    [theme.breakpoints.down('md')]: {
+      maxWidth: 994,
+    },
     [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(2, 3),
-      justifyContent: 'center',
       flexFlow: 'column',
+      maxWidth: 651,
+    },
+    [theme.breakpoints.down('xs')]: {
+      maxWidth: 310,
     },
   },
   pageLabel: {
@@ -64,16 +74,17 @@ const useStyles = makeStyles(theme => ({
   loginBtn: {
     flex: '0 1 120px',
     margin: theme.spacing(0, 1, 0, 5),
-    backgroundColor: '#007bff',
+    backgroundColor: '#C7E191',
+    color: '#fff',
     '&:hover': {
-      backgroundColor: '#0069d9',
-      borderColor: '#0062cc',
+      backgroundColor: '#BDD983',
+      borderColor: '#95CC75',
       boxShadow: 'none',
     },
     '&:active': {
       boxShadow: 'none',
-      backgroundColor: '#0062cc',
-      borderColor: '#005cbf',
+      backgroundColor: '#A5C365',
+      borderColor: '#95CC75',
     },
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(1, 0),
@@ -96,7 +107,7 @@ function App() {
         <AppBar position="static" color="inherit" className={classes.appbar}>
           <Toolbar className={classes.toolbar}>
             <Typography className={`${classes.navBtn} ${classes.logoBtn}`}>
-              Read Top News Headlines By
+              Top News Headlines
             </Typography>
             <div className={classes.pageLabel}>
               <ListItem

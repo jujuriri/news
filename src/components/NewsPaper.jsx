@@ -7,7 +7,6 @@ import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
 import Masonry from './Masonry'
 import NewsCard from './NewsCard'
-import SortBtns from './SortBtns'
 import Loader from './Loader'
 
 const useStyles = makeStyles(theme => ({
@@ -19,14 +18,32 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     height: 88,
     display: 'flex',
+    [theme.breakpoints.down('md')]: {
+      maxWidth: 994,
+    },
+    [theme.breakpoints.down('sm')]: {
+      flexFlow: 'column',
+      alignItems: 'center',
+      height: 'auto',
+      maxWidth: 651,
+      padding: theme.spacing(0, 1),
+    },
+    [theme.breakpoints.down('xs')]: {
+      maxWidth: 310,
+      alignItems: 'unset',
+      padding: 'unset',
+    },
   },
   searchBtn: {
-    height: '64%',
+    height: 55,
     margin: theme.spacing(1),
     textTransform: 'none',
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+    },
   },
   divider: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1, 1, 3, 1),
   },
 }))
 
@@ -43,13 +60,11 @@ const NewsPaper = ({ readBy }) => {
   const [newsList, setNewsList] = useState([])
   const [totalResults, setTotalResults] = useState(0)
   const [curPage, setCurPage] = useState(1)
-  const [sortBy, setSortBy] = useState('Date')
 
   const prevSelectedCtry = usePrevious(selectedCtry)
   const prevSelectedCat = usePrevious(selectedCat)
   const prevSelectedPubl = usePrevious(selectedPubl)
   const prevCurPage = usePrevious(curPage)
-  const prevSortBy = usePrevious(sortBy)
 
   // Wait Firebase
   useEffect(() => {
@@ -110,43 +125,11 @@ const NewsPaper = ({ readBy }) => {
       if (isAdminSetting && prevSelectedCtry !== selectedCtry && prevSelectedCat !== selectedCat) {
         getNews(selectedCtry, selectedCat)
       }
-      if (prevSortBy !== sortBy) {
-        if (sortBy === 'Date') {
-          console.log('地方日期換換換')
-        } else if (sortBy === 'Title') {
-          console.log('地方標題換換換')
-          let lang
-          if (selectedCtry === 'Taiwan') {
-            lang = 'zh-Hant'
-          } else if (selectedCtry === 'Japan') {
-            lang = 'jp'
-          } else {
-            lang = null
-          }
-          const unSortNews = [...newsList]
-          const sortedNews = unSortNews.sort((a, b) => {
-            return a.title.localeCompare(b.title, `${lang}`)
-          })
-          setNewsList(sortedNews)
-        }
-      }
     }
     // If users open Publisher page
     if (readBy === 'Publisher') {
       if (isAdminSetting && prevSelectedPubl !== selectedPubl) {
         getNews(null, null, selectedPubl)
-      }
-      if (prevSortBy !== sortBy) {
-        if (sortBy === 'Date') {
-          console.log('出版商日期換換換')
-        } else if (sortBy === 'Title') {
-          console.log('出版商標題換換換')
-          const unSortNews = [...newsList]
-          const sortedNews = unSortNews.sort((a, b) => {
-            return a.title.localeCompare(b.title)
-          })
-          setNewsList(sortedNews)
-        }
       }
     }
   }, [
@@ -158,18 +141,19 @@ const NewsPaper = ({ readBy }) => {
     prevSelectedCat,
     prevSelectedCtry,
     prevSelectedPubl,
-    prevSortBy,
     readBy,
     selectedCat,
     selectedCtry,
     selectedPubl,
-    sortBy,
   ])
 
   // Infinite Scroll (Pagination)
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + window.scrollY === document.body.offsetHeight && !isLaoding) {
+      const trigger = document.body.offsetHeight - 5
+      // console.log('inner+scrollY', window.innerHeight + window.scrollY)
+      // console.log('trigger', trigger, 'body offSet', document.body.offsetHeight)
+      if (window.innerHeight + window.scrollY >= trigger && !isLaoding) {
         if (totalResults > newsList.length) {
           setCurPage(curPage + 1)
         } else {
@@ -235,14 +219,6 @@ const NewsPaper = ({ readBy }) => {
     }
   }
 
-  const sortByDate = () => {
-    setSortBy('Date')
-  }
-
-  const sortByTitle = () => {
-    setSortBy('Title')
-  }
-
   return (
     <div className={classes.newsPaper}>
       {newsList.length > 0 && (
@@ -277,7 +253,6 @@ const NewsPaper = ({ readBy }) => {
             </Button>
           </div>
           <Divider className={classes.divider} />
-          <SortBtns sortByDate={() => sortByDate()} sortByTitle={() => sortByTitle()} />
           <Masonry colNum={colNum}>
             {newsList.map((n, i) => {
               return (
