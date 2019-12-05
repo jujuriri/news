@@ -49,7 +49,9 @@ function ControlPanel() {
     useFirebase
       .saveSettings(admin)
       .then(console.log('options has been saved!'))
-      .catch(err => console.log(err))
+      .catch(err => {
+        throw new Error(err)
+      })
     setSelectedCat('')
     setSelectedCtry('')
     setSelectedPubl('')

@@ -46,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-function Login() {
+const Login = () => {
   const classes = useStyles()
   const loginMsg = 'Only administrator allow to login.'
 
@@ -86,7 +86,9 @@ function Login() {
         className={classes.button}
         fullWidth
         onClick={() => {
-          useFirebase.login(email, pw).catch(err => console.log(err.message))
+          useFirebase.login(email, pw).catch(err => {
+            throw new Error(err.message)
+          })
         }}
       >
         Login

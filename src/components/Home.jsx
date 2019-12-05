@@ -31,7 +31,6 @@ const Home = () => {
   const location = useLocation()
 
   useEffect(() => {
-    console.log('Home here! location: ', location)
     if (location.pathname === '/') {
       setReadBy('Country and Category')
     } else if (location.pathname === '/publ') {
