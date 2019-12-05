@@ -219,6 +219,13 @@ const NewsPaper = ({ readBy }) => {
     }
   }
 
+  const userSearch = () => {
+    console.log('readby', readBy)
+    console.log('ctry', prevSelectedCtry, selectedCtry)
+    console.log('cat', prevSelectedCat, selectedCat)
+    console.log('publ', prevSelectedPubl, selectedPubl)
+  }
+
   return (
     <div className={classes.newsPaper}>
       {newsList.length > 0 && (
@@ -248,7 +255,7 @@ const NewsPaper = ({ readBy }) => {
                 changeHandler={changePubl}
               />
             )}
-            <Button className={classes.searchBtn} variant="outlined">
+            <Button className={classes.searchBtn} variant="outlined" onClick={() => userSearch()}>
               Search
             </Button>
           </div>

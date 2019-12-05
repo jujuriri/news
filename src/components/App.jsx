@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     boxShadow: 'unset',
     marginBottom: theme.spacing(3),
     [theme.breakpoints.down('sm')]: {
-      paddingTop: theme.spacing(1),
+      padding: theme.spacing(1, 0),
     },
   },
   toolbar: {
@@ -37,6 +37,7 @@ const useStyles = makeStyles(theme => ({
     },
     [theme.breakpoints.down('xs')]: {
       maxWidth: 310,
+      padding: 'unset',
     },
   },
   pageLabel: {
