@@ -11,8 +11,19 @@ import Loader from './Loader'
 
 const useStyles = makeStyles(theme => ({
   newsPaper: {
-    margin: theme.spacing(0, 1, 7, 1),
+    margin: theme.spacing(0, 1, 9, 1),
     padding: theme.spacing(0, 1),
+    width: '100%',
+    maxWidth: 1320,
+    [theme.breakpoints.down('md')]: {
+      maxWidth: 994,
+    },
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: 667,
+    },
+    [theme.breakpoints.down(600)]: {
+      maxWidth: 310,
+    },
   },
   searchBar: {
     width: '100%',
@@ -27,11 +38,6 @@ const useStyles = makeStyles(theme => ({
       height: 'auto',
       maxWidth: 651,
       padding: theme.spacing(0, 1),
-    },
-    [theme.breakpoints.down('xs')]: {
-      maxWidth: 310,
-      alignItems: 'unset',
-      padding: 'unset',
     },
   },
   searchBtn: {
@@ -220,62 +226,79 @@ const NewsPaper = ({ readBy }) => {
   }
 
   const userSearch = () => {
-    console.log('readby', readBy)
-    console.log('ctry', prevSelectedCtry, selectedCtry)
-    console.log('cat', prevSelectedCat, selectedCat)
-    console.log('publ', prevSelectedPubl, selectedPubl)
+    if (!isAdminSetting) {
+      if (selectedCat !== '' && selectedCtry !== '' && selectedPubl !== '') {
+        if (
+          prevSelectedCtry !== selectedCtry ||
+          prevSelectedCat !== selectedCat ||
+          prevSelectedPubl !== selectedPubl
+        ) {
+          setIsLoading(true)
+          setNewsList([])
+          setCurPage(1)
+          if (readBy === 'Country and Category') {
+            getNews(selectedCtry, selectedCat)
+          }
+          if (readBy === 'Publisher') {
+            getNews(null, null, selectedPubl)
+          }
+        } else {
+          console.log('搜尋選項一樣，不需重新搜尋')
+        }
+      } else {
+        console.log('選項都必填')
+      }
+    }
   }
 
   return (
     <div className={classes.newsPaper}>
+      <div className={classes.searchBar}>
+        {readBy === 'Country and Category' && (
+          <>
+            <Selector
+              name="Country"
+              options={news.countries}
+              selected={selectedCtry}
+              changeHandler={changeCtry}
+            />
+            <Selector
+              name="Category"
+              options={news.categories}
+              selected={selectedCat}
+              changeHandler={changeCat}
+            />
+          </>
+        )}
+        {readBy === 'Publisher' && (
+          <Selector
+            name="Publisher"
+            options={news.publishers}
+            selected={selectedPubl}
+            changeHandler={changePubl}
+          />
+        )}
+        <Button className={classes.searchBtn} variant="outlined" onClick={() => userSearch()}>
+          Search
+        </Button>
+      </div>
+      <Divider className={classes.divider} />
       {newsList.length > 0 && (
-        <>
-          <div className={classes.searchBar}>
-            {readBy === 'Country and Category' && (
-              <>
-                <Selector
-                  name="Country"
-                  options={news.countries}
-                  selected={selectedCtry}
-                  changeHandler={changeCtry}
-                />
-                <Selector
-                  name="Category"
-                  options={news.categories}
-                  selected={selectedCat}
-                  changeHandler={changeCat}
-                />
-              </>
-            )}
-            {readBy === 'Publisher' && (
-              <Selector
-                name="Publisher"
-                options={news.publishers}
-                selected={selectedPubl}
-                changeHandler={changePubl}
+        <Masonry colNum={colNum}>
+          {newsList.map((n, i) => {
+            return (
+              <NewsCard
+                key={`NewsCard-${i}`}
+                imgUrl={n.urlToImage}
+                articleUrl={n.url}
+                newsTitle={n.title}
+                newsSummary={n.description}
+                publishedAt={n.publishedAt}
+                sourceName={n.source.name}
               />
-            )}
-            <Button className={classes.searchBtn} variant="outlined" onClick={() => userSearch()}>
-              Search
-            </Button>
-          </div>
-          <Divider className={classes.divider} />
-          <Masonry colNum={colNum}>
-            {newsList.map((n, i) => {
-              return (
-                <NewsCard
-                  key={`NewsCard-${i}`}
-                  imgUrl={n.urlToImage}
-                  articleUrl={n.url}
-                  newsTitle={n.title}
-                  newsSummary={n.description}
-                  publishedAt={n.publishedAt}
-                  sourceName={n.source.name}
-                />
-              )
-            })}
-          </Masonry>
-        </>
+            )
+          })}
+        </Masonry>
       )}
       {isLaoding && <Loader />}
     </div>

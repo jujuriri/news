@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom'
+import React from 'react'
+import { BrowserRouter as Router, Route, NavLink, Link } from 'react-router-dom'
 import {
   CssBaseline,
   makeStyles,
@@ -15,29 +15,26 @@ import Admin from './Admin'
 const useStyles = makeStyles(theme => ({
   appbar: {
     boxShadow: 'unset',
-    marginBottom: theme.spacing(3),
+    marginBottom: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(1, 0),
+      padding: theme.spacing(1, 3),
     },
   },
   toolbar: {
-    flexFlow: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
     width: '100%',
     maxWidth: 1320,
-    padding: theme.spacing(0, 1),
+    padding: theme.spacing(0, 2),
+    alignSelf: 'center',
     [theme.breakpoints.down('md')]: {
       maxWidth: 994,
     },
     [theme.breakpoints.down('sm')]: {
       flexFlow: 'column',
       maxWidth: 651,
+      padding: theme.spacing(0, 1),
     },
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down(600)]: {
       maxWidth: 310,
-      padding: 'unset',
     },
   },
   pageLabel: {
@@ -54,12 +51,14 @@ const useStyles = makeStyles(theme => ({
       width: '100%',
     },
   },
+  logoLink: {
+    textDecoration: 'none',
+  },
   logoBtn: {
     fontWeight: 'bold',
     fontFamily: 'Meiryo',
-    cursor: 'pointer',
     fontSize: '20px',
-    margin: theme.spacing(0, 5, 0, 1),
+    margin: theme.spacing(0, 5, 0, 0),
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(1, 0),
     },
@@ -72,9 +71,12 @@ const useStyles = makeStyles(theme => ({
       margin: theme.spacing(0.5, 2),
     },
   },
+  navBtnActive: {
+    backgroundColor: theme.palette.action.selected,
+  },
   loginBtn: {
     flex: '0 1 120px',
-    margin: theme.spacing(0, 1, 0, 5),
+    margin: theme.spacing(0, 0, 0, 5),
     backgroundColor: '#C7E191',
     color: '#fff',
     '&:hover': {
@@ -97,19 +99,17 @@ const useStyles = makeStyles(theme => ({
 const App = () => {
   const classes = useStyles()
 
-  useEffect(() => {
-    console.log('App here!')
-  }, [])
-
   return (
     <>
       <CssBaseline />
       <Router basename={process.env.PUBLIC_URL}>
         <AppBar position="static" color="inherit" className={classes.appbar}>
           <Toolbar className={classes.toolbar}>
-            <Typography className={`${classes.navBtn} ${classes.logoBtn}`}>
-              Top News Headlines
-            </Typography>
+            <Link to="/" className={classes.logoLink}>
+              <Typography className={`${classes.navBtn} ${classes.logoBtn}`}>
+                Top News Headlines
+              </Typography>
+            </Link>
             <div className={classes.pageLabel}>
               <ListItem
                 className={classes.navBtn}
@@ -118,6 +118,7 @@ const App = () => {
                 component={NavLink}
                 exact
                 to="/"
+                activeClassName={classes.navBtnActive}
               >
                 <ListItemText primary="Country and Category" />
               </ListItem>
@@ -127,6 +128,7 @@ const App = () => {
                 key="Publisher"
                 component={NavLink}
                 to="/publ"
+                activeClassName={classes.navBtnActive}
               >
                 <ListItemText primary="Publisher" />
               </ListItem>

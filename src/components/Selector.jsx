@@ -13,10 +13,6 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     width: '100%',
-    minWidth: 190,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
   },
 }))
 
@@ -26,6 +22,7 @@ const Selector = ({ name, options, changeHandler, selected }) => {
 
   const [labelWidth, setLabelWidth] = useState(0)
   const [hasErr, setHasErr] = useState(false)
+
   useEffect(() => {
     setLabelWidth(inputLabel.current.offsetWidth)
   }, [])
