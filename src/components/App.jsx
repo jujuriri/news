@@ -58,6 +58,7 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 'bold',
     fontFamily: 'Meiryo',
     fontSize: '20px',
+    color: '#55b4d1',
     margin: theme.spacing(0, 5, 0, 0),
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(1, 0),

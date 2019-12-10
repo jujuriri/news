@@ -5,18 +5,10 @@ import useFirebase from '../firebase'
 import Selector from './Selector'
 
 const useStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    flexFlow: 'column',
-    width: 300,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 'auto',
-  },
   button: {
     margin: theme.spacing(1),
+    flex: '1 1 auto',
     textTransform: 'none',
-    width: 300,
   },
 }))
 
@@ -58,8 +50,7 @@ function ControlPanel() {
   }
 
   return (
-    <div className={classes.container}>
-      <p>Control Panel</p>
+    <div>
       <Selector
         name="Publisher"
         options={news.publishers}

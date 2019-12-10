@@ -18,6 +18,9 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     maxWidth: 310,
   },
+  cardActionsArea: {
+    transition: 'background-color .2s linear',
+  },
   cardActions: {
     display: 'flex',
     flexFlow: 'column',
@@ -50,7 +53,7 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, art
 
   return (
     <Card className={classes.card}>
-      <CardActionArea>
+      <CardActionArea className={classes.cardActionsArea}>
         <CardMedia
           component="img"
           alt="Contemplative Reptile"

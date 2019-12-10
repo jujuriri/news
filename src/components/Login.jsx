@@ -1,33 +1,8 @@
 import React, { useState } from 'react'
-import {
-  makeStyles,
-  Typography,
-  Button,
-  TextField,
-  ListItem,
-  ListItemText,
-  Avatar,
-} from '@material-ui/core'
+import { makeStyles, Button, TextField, ListItem, ListItemText } from '@material-ui/core'
 import useFirebase from '../firebase'
-import avatarImg from '../assets/imgs/logo.svg'
 
 const useStyles = makeStyles(theme => ({
-  container: {
-    display: 'flex',
-    flexFlow: 'column',
-    width: 300,
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 'auto',
-  },
-  logo: {
-    margin: 10,
-    width: 60,
-    height: 60,
-  },
-  title: {
-    marginBottom: theme.spacing(1),
-  },
   textField: {
     margin: theme.spacing(1),
     flex: '1 1 auto',
@@ -54,11 +29,7 @@ const Login = () => {
   const [pw, setPw] = useState('')
 
   return (
-    <form className={classes.container} noValidate autoComplete="off">
-      <Avatar alt="News" src={avatarImg} className={classes.logo} />
-      <Typography className={classes.title} variant="h6">
-        Login
-      </Typography>
+    <form noValidate autoComplete="off">
       <TextField
         id="outlined-basic"
         className={classes.textField}
