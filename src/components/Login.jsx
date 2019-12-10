@@ -4,11 +4,10 @@ import useFirebase from '../firebase'
 
 const useStyles = makeStyles(theme => ({
   textField: {
-    margin: theme.spacing(1),
     flex: '1 1 auto',
   },
   button: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(2, 0),
     flex: '1 1 auto',
     textTransform: 'none',
   },

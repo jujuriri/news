@@ -11,7 +11,7 @@ import {
 
 const useStyles = makeStyles(theme => ({
   formControl: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1, 0),
     width: '100%',
   },
 }))

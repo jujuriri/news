@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core'
 import NewsPaper from './NewsPaper'
+import ScrollToTop from './ScrollToTop'
 
 // Get admin settings from firestore first,
 // then get news data based on that settings.
@@ -41,6 +42,7 @@ const Home = () => {
   return (
     <div className={classes.container}>
       <NewsPaper readBy={readBy} />
+      <ScrollToTop />
     </div>
   )
 }

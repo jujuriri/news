@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react'
 import { makeStyles, Button } from '@material-ui/core'
-import { NewsContext } from '../context/context'
+import { NewsContext, FirestoreContext } from '../context/context'
 import useFirebase from '../firebase'
 import Selector from './Selector'
 
 const useStyles = makeStyles(theme => ({
   button: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(1, 0),
     flex: '1 1 auto',
     textTransform: 'none',
   },
@@ -14,6 +14,7 @@ const useStyles = makeStyles(theme => ({
 
 function ControlPanel() {
   const classes = useStyles()
+  const firestore = useContext(FirestoreContext)
   const news = useContext(NewsContext)
 
   const [selectedCtry, setSelectedCtry] = useState('')
@@ -33,20 +34,24 @@ function ControlPanel() {
   }
 
   const saveAdminSettings = () => {
-    const admin = {
-      category: selectedCat,
-      publisher: selectedPubl,
-      country: selectedCtry,
+    if (selectedCat !== '' && selectedCtry !== '' && selectedPubl !== '') {
+      const admin = {
+        category: selectedCat,
+        publisher: selectedPubl,
+        country: selectedCtry,
+      }
+      useFirebase
+        .saveSettings(admin)
+        .then(console.log('options has been saved!'))
+        .catch(err => {
+          throw new Error(err)
+        })
+      setSelectedCat('')
+      setSelectedCtry('')
+      setSelectedPubl('')
+    } else {
+      console.log('選項都必填')
     }
-    useFirebase
-      .saveSettings(admin)
-      .then(console.log('options has been saved!'))
-      .catch(err => {
-        throw new Error(err)
-      })
-    setSelectedCat('')
-    setSelectedCtry('')
-    setSelectedPubl('')
   }
 
   return (

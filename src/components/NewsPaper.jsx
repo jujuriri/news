@@ -39,6 +39,12 @@ const useStyles = makeStyles(theme => ({
       maxWidth: 651,
       padding: theme.spacing(0, 1),
     },
+    '& > div:nth-of-type(1)': {
+      marginLeft: theme.spacing(1),
+    },
+    '& > div:nth-of-type(2)': {
+      marginLeft: theme.spacing(1),
+    },
   },
   searchBtn: {
     height: 55,
