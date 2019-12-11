@@ -284,7 +284,6 @@ const NewsPaper = ({ readBy }) => {
   }
 
   const closeDialog = () => {
-    console.log('辣可')
     setIsDialogOpen(false)
   }
 
@@ -341,7 +340,7 @@ const NewsPaper = ({ readBy }) => {
             })}
           </Masonry>
           <Dialog open={isDialogOpen} onClose={closeDialog}>
-            <DialogTitle id="dialog-title">
+            <DialogTitle id="dialog-News">
               {curClickedNews.title}
               <Typography>{curClickedNews.author}</Typography>
             </DialogTitle>

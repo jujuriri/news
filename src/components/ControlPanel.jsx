@@ -1,5 +1,15 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { makeStyles, Button, ListItem, ListItemText } from '@material-ui/core'
+import {
+  makeStyles,
+  Button,
+  ListItem,
+  ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from '@material-ui/core'
 import { NewsContext, FirestoreContext } from '../context/context'
 import useFirebase from '../firebase'
 import Selector from './Selector'
@@ -25,6 +35,7 @@ function ControlPanel() {
   const [selectedCtry, setSelectedCtry] = useState('')
   const [selectedPubl, setSelectedPubl] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   useEffect(() => {
     setSelectedCtry(firestore.adminCountry)
@@ -44,6 +55,14 @@ function ControlPanel() {
     setSelectedPubl(value)
   }
 
+  const closeDialog = () => {
+    setIsDialogOpen(false)
+  }
+
+  const refresh = () => {
+    console.log('eee')
+  }
+
   const saveAdminSettings = () => {
     if (selectedCat !== '' && selectedCtry !== '' && selectedPubl !== '') {
       const admin = {
@@ -53,9 +72,9 @@ function ControlPanel() {
       }
       useFirebase
         .saveSettings(admin)
-        .then(console.log('options has been saved!'))
+        .then(setIsDialogOpen(true))
         .catch(err => {
-          throw new Error(err)
+          console.log(err)
         })
     } else {
       console.log('選項都必填')
@@ -85,6 +104,23 @@ function ControlPanel() {
       <Button className={classes.button} variant="outlined" fullWidth onClick={saveAdminSettings}>
         Save
       </Button>
+      <Dialog open={isDialogOpen} onClose={closeDialog}>
+        <DialogTitle id="dialog-Admin">Settings Saved</DialogTitle>
+        <DialogContent dividers>
+          <DialogContentText id="dialog-description">
+            New settings will be applied to your next visit. (or you can refresh whole website right
+            now.)
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="primary" onClick={closeDialog}>
+            Ok (Do nothing)
+          </Button>
+          <Button color="primary" onClick={refresh}>
+            Refresh website
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Button
         className={classes.button}
         variant="outlined"
