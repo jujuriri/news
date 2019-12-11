@@ -31,7 +31,17 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, articleUrl }) => {
+const NewsCard = ({
+  imgUrl,
+  newsTitle,
+  newsSummary,
+  publishedAt,
+  sourceName,
+  author,
+  articleUrl,
+  newsContent,
+  openDialog,
+}) => {
   const classes = useStyles()
 
   const checkedImgUrl = url => {
@@ -41,10 +51,24 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, art
     return url
   }
 
+  const checkedNewsContent = content => {
+    if (content === null || content === 'null' || !content) {
+      return newsSummary
+    }
+    return content
+  }
+
   const toLocalTime = utc => {
     const publTime = moment(`${utc}`)
     const userTZ = moment.tz.guess(true)
     return publTime.tz(userTZ).format('LLL')
+  }
+
+  const checkedAuthor = name => {
+    if (name === null || name === 'null' || !name) {
+      return `No Author Information.`
+    }
+    return name
   }
 
   const openArticleUrl = url => {
@@ -53,14 +77,20 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, art
 
   return (
     <Card className={classes.card}>
-      <CardActionArea className={classes.cardActionsArea}>
-        <CardMedia
-          component="img"
-          alt="Contemplative Reptile"
-          height="140"
-          image={checkedImgUrl(imgUrl)}
-          title={newsTitle}
-        />
+      <CardActionArea
+        className={classes.cardActionsArea}
+        onClick={() =>
+          openDialog(
+            newsTitle,
+            checkedImgUrl(imgUrl),
+            checkedNewsContent(newsContent),
+            toLocalTime(publishedAt),
+            sourceName,
+            checkedAuthor(author)
+          )
+        }
+      >
+        <CardMedia component="img" height="140" image={checkedImgUrl(imgUrl)} />
         <CardContent>
           <Typography gutterBottom variant="h6" component="h6">
             {newsTitle}
@@ -85,10 +115,12 @@ const NewsCard = ({ imgUrl, newsTitle, newsSummary, publishedAt, sourceName, art
 NewsCard.defaultProps = {
   imgUrl: 'https://source.unsplash.com/random/300x400',
   newsTitle: 'I am a news title',
-  newsSummary: 'I am a news summary',
+  newsSummary: 'I am news summary',
   publishedAt: '0000/00/00 00:00',
   sourceName: 'google',
+  author: 'I am author',
   articleUrl: 'https://google.com',
+  newsContent: 'I am news content',
 }
 
 NewsCard.propTypes = {
@@ -97,7 +129,10 @@ NewsCard.propTypes = {
   newsSummary: PropTypes.string,
   publishedAt: PropTypes.string,
   sourceName: PropTypes.string,
+  author: PropTypes.string,
   articleUrl: PropTypes.string,
+  newsContent: PropTypes.string,
+  openDialog: PropTypes.func.isRequired,
 }
 
 export default NewsCard

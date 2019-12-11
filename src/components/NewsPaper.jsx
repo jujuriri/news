@@ -1,7 +1,18 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import { makeStyles, Button, Divider } from '@material-ui/core'
+import {
+  makeStyles,
+  Button,
+  Divider,
+  Dialog,
+  Typography,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  CardMedia,
+  DialogContentText,
+} from '@material-ui/core'
 import { usePrevious, useWindowWidth } from '../customHooks'
 import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
@@ -72,6 +83,8 @@ const NewsPaper = ({ readBy }) => {
   const [newsList, setNewsList] = useState([])
   const [totalResults, setTotalResults] = useState(0)
   const [curPage, setCurPage] = useState(1)
+  const [curClickedNews, setCurClickedNews] = useState({})
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const prevSelectedCtry = usePrevious(selectedCtry)
   const prevSelectedCat = usePrevious(selectedCat)
@@ -257,6 +270,24 @@ const NewsPaper = ({ readBy }) => {
     }
   }
 
+  const openDialog = (title, img, content, time, source, author) => {
+    const fully = {
+      title,
+      img,
+      content,
+      time,
+      source,
+      author,
+    }
+    setIsDialogOpen(true)
+    setCurClickedNews(fully)
+  }
+
+  const closeDialog = () => {
+    console.log('辣可')
+    setIsDialogOpen(false)
+  }
+
   return (
     <div className={classes.newsPaper}>
       <div className={classes.searchBar}>
@@ -290,21 +321,42 @@ const NewsPaper = ({ readBy }) => {
       </div>
       <Divider className={classes.divider} />
       {newsList.length > 0 && (
-        <Masonry colNum={colNum}>
-          {newsList.map((n, i) => {
-            return (
-              <NewsCard
-                key={`NewsCard-${i}`}
-                imgUrl={n.urlToImage}
-                articleUrl={n.url}
-                newsTitle={n.title}
-                newsSummary={n.description}
-                publishedAt={n.publishedAt}
-                sourceName={n.source.name}
-              />
-            )
-          })}
-        </Masonry>
+        <>
+          <Masonry colNum={colNum}>
+            {newsList.map((n, i) => {
+              return (
+                <NewsCard
+                  key={`NewsCard-${i}`}
+                  imgUrl={n.urlToImage}
+                  articleUrl={n.url}
+                  newsTitle={n.title}
+                  newsSummary={n.description}
+                  publishedAt={n.publishedAt}
+                  sourceName={n.source.name}
+                  author={n.author}
+                  newsContent={n.content}
+                  openDialog={openDialog}
+                />
+              )
+            })}
+          </Masonry>
+          <Dialog open={isDialogOpen} onClose={closeDialog}>
+            <DialogTitle id="dialog-title">
+              {curClickedNews.title}
+              <Typography>{curClickedNews.author}</Typography>
+            </DialogTitle>
+            <CardMedia component="img" height="140" image={curClickedNews.img} />
+            <DialogContent dividers>
+              <DialogContentText id="dialog-description">
+                {curClickedNews.content}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Typography>{curClickedNews.time}</Typography>
+              <Button color="primary">{curClickedNews.source}</Button>
+            </DialogActions>
+          </Dialog>
+        </>
       )}
       {isLaoding && <Loader />}
     </div>
