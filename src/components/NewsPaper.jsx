@@ -78,7 +78,7 @@ const NewsPaper = ({ readBy }) => {
   const prevSelectedPubl = usePrevious(selectedPubl)
   const prevCurPage = usePrevious(curPage)
 
-  // Wait Firebase
+  // Firebase thing
   useEffect(() => {
     if (
       firestore.adminCountry !== '' &&

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { makeStyles, Button, TextField, ListItem, ListItemText } from '@material-ui/core'
+import { makeStyles, Button, TextField } from '@material-ui/core'
 import useFirebase from '../firebase'
 
 const useStyles = makeStyles(theme => ({
@@ -14,18 +14,13 @@ const useStyles = makeStyles(theme => ({
   input: {
     display: 'none',
   },
-  loginMsg: {
-    marginTop: theme.spacing(1),
-    textAlign: 'center',
-  },
 }))
 
 const Login = () => {
   const classes = useStyles()
-  const loginMsg = 'Only administrator allow to login.'
 
-  const [email, setEmail] = useState('')
-  const [pw, setPw] = useState('')
+  const [email, setEmail] = useState(`${process.env.REACT_APP_ADMIN_ID}`)
+  const [pw, setPw] = useState(`${process.env.REACT_APP_ADMIN_PW}`)
 
   return (
     <form noValidate autoComplete="off">
@@ -63,9 +58,6 @@ const Login = () => {
       >
         Login
       </Button>
-      <ListItem className={classes.loginMsg}>
-        <ListItemText primary={loginMsg} />
-      </ListItem>
     </form>
   )
 }

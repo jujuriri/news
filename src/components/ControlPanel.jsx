@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react'
-import { makeStyles, Button } from '@material-ui/core'
+import React, { useContext, useState, useEffect } from 'react'
+import { makeStyles, Button, ListItem, ListItemText } from '@material-ui/core'
 import { NewsContext, FirestoreContext } from '../context/context'
 import useFirebase from '../firebase'
 import Selector from './Selector'
@@ -10,16 +10,27 @@ const useStyles = makeStyles(theme => ({
     flex: '1 1 auto',
     textTransform: 'none',
   },
+  controlPanelMsg: {
+    marginTop: theme.spacing(1),
+    textAlign: 'center',
+  },
 }))
 
 function ControlPanel() {
   const classes = useStyles()
+  const controlPanelMsg = 'Settings will be reflected on the public pages.'
   const firestore = useContext(FirestoreContext)
   const news = useContext(NewsContext)
 
   const [selectedCtry, setSelectedCtry] = useState('')
   const [selectedPubl, setSelectedPubl] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
+
+  useEffect(() => {
+    setSelectedCtry(firestore.adminCountry)
+    setSelectedCat(firestore.adminCategory)
+    setSelectedPubl(firestore.adminPublisher)
+  }, [firestore.adminCategory, firestore.adminCountry, firestore.adminPublisher])
 
   const changeCtry = value => {
     setSelectedCtry(value)
@@ -46,9 +57,6 @@ function ControlPanel() {
         .catch(err => {
           throw new Error(err)
         })
-      setSelectedCat('')
-      setSelectedCtry('')
-      setSelectedPubl('')
     } else {
       console.log('選項都必填')
     }
@@ -85,6 +93,9 @@ function ControlPanel() {
       >
         Log Out
       </Button>
+      <ListItem className={classes.controlPanelMsg}>
+        <ListItemText primary={controlPanelMsg} />
+      </ListItem>
     </div>
   )
 }
