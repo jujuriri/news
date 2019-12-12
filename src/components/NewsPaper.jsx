@@ -7,12 +7,12 @@ import {
   Divider,
   Dialog,
   Typography,
+  IconButton,
   DialogContent,
-  DialogTitle,
   DialogActions,
-  CardMedia,
   DialogContentText,
 } from '@material-ui/core'
+import CloseIcon from '@material-ui/icons/Close'
 import { usePrevious, useWindowWidth } from '../customHooks'
 import { NewsContext, FirestoreContext } from '../context/context'
 import Selector from './Selector'
@@ -68,6 +68,28 @@ const useStyles = makeStyles(theme => ({
   divider: {
     margin: theme.spacing(1, 1, 3, 1),
   },
+  dialogHeader: {
+    display: 'flex',
+    padding: theme.spacing(2, 3),
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    '& > div': {
+      marginRight: theme.spacing(1),
+    },
+  },
+  dialogImg: {
+    display: 'block',
+    width: '100%',
+    height: 'auto',
+    objectFit: 'scale-down',
+    marginBottom: theme.spacing(1.5),
+  },
+  dialogFooter: {
+    flexFlow: 'column',
+    '& > p': {
+      marginBottom: theme.spacing(1),
+    },
+  },
 }))
 
 const NewsPaper = ({ readBy }) => {
@@ -93,16 +115,12 @@ const NewsPaper = ({ readBy }) => {
 
   // Firebase thing
   useEffect(() => {
-    if (
-      firestore.adminCountry !== '' &&
-      firestore.adminCategory !== '' &&
-      firestore.adminPublisher !== ''
-    ) {
-      setSelectedCtry(firestore.adminCountry)
-      setSelectedCat(firestore.adminCategory)
-      setSelectedPubl(firestore.adminPublisher)
+    if (firestore.adminCC.ctry && firestore.adminCC.cat && firestore.adminPubl !== '') {
+      setSelectedCtry(firestore.adminCC.ctry)
+      setSelectedCat(firestore.adminCC.cat)
+      setSelectedPubl(firestore.adminPubl)
     }
-  }, [firestore.adminCategory, firestore.adminCountry, firestore.adminPublisher])
+  }, [firestore.adminCC.cat, firestore.adminCC.ctry, firestore.adminPubl, readBy])
 
   // Function for fetching news
   const getNews = useCallback(
@@ -176,15 +194,16 @@ const NewsPaper = ({ readBy }) => {
   useEffect(() => {
     const handleScroll = () => {
       const trigger = document.body.offsetHeight - 5
-      // console.log('inner+scrollY', window.innerHeight + window.scrollY)
-      // console.log('trigger', trigger, 'body offSet', document.body.offsetHeight)
       if (window.innerHeight + window.scrollY >= trigger && !isLaoding) {
         if (totalResults > newsList.length) {
           setCurPage(curPage + 1)
         } else {
-          console.log('No more page.')
+          // No more page.
+          return 0
         }
       }
+      // Arrow function has to return something at the end
+      return 0
     }
     window.addEventListener('scroll', handleScroll)
 
@@ -262,15 +281,19 @@ const NewsPaper = ({ readBy }) => {
             getNews(null, null, selectedPubl)
           }
         } else {
-          console.log('搜尋選項一樣，不需重新搜尋')
+          // Selected Options remaine the same as before, no need to search again.
+          return 0
         }
       } else {
-        console.log('選項都必填')
+        // Required field is left empty.
+        return 0
       }
     }
+    // Arrow function has to return something at the end
+    return 0
   }
 
-  const openDialog = (title, img, content, time, source, author) => {
+  const openDialog = (title, img, content, time, source, author, url) => {
     const fully = {
       title,
       img,
@@ -278,6 +301,7 @@ const NewsPaper = ({ readBy }) => {
       time,
       source,
       author,
+      url,
     }
     setIsDialogOpen(true)
     setCurClickedNews(fully)
@@ -286,6 +310,13 @@ const NewsPaper = ({ readBy }) => {
   const closeDialog = () => {
     setIsDialogOpen(false)
   }
+
+  const openArticleUrl = url => {
+    window.open(url, '_blank')
+  }
+
+  // Because I don't want to install short-id here, so I came up with this solution myself.
+  let newsCardKey = 0
 
   return (
     <div className={classes.newsPaper}>
@@ -322,10 +353,11 @@ const NewsPaper = ({ readBy }) => {
       {newsList.length > 0 && (
         <>
           <Masonry colNum={colNum}>
-            {newsList.map((n, i) => {
+            {newsList.map(n => {
+              newsCardKey += 1
               return (
                 <NewsCard
-                  key={`NewsCard-${i}`}
+                  key={`NewsCard-${newsCardKey}`}
                   imgUrl={n.urlToImage}
                   articleUrl={n.url}
                   newsTitle={n.title}
@@ -335,24 +367,42 @@ const NewsPaper = ({ readBy }) => {
                   author={n.author}
                   newsContent={n.content}
                   openDialog={openDialog}
+                  openArticleUrl={openArticleUrl}
                 />
               )
             })}
           </Masonry>
           <Dialog open={isDialogOpen} onClose={closeDialog}>
-            <DialogTitle id="dialog-News">
-              {curClickedNews.title}
-              <Typography>{curClickedNews.author}</Typography>
-            </DialogTitle>
-            <CardMedia component="img" height="140" image={curClickedNews.img} />
+            <div className={classes.dialogHeader}>
+              <div>
+                <Typography variant="subtitle1">{curClickedNews.title}</Typography>
+                <Typography variant="subtitle2" color="primary">
+                  {curClickedNews.author}
+                </Typography>
+              </div>
+              <IconButton onClick={() => closeDialog()}>
+                <CloseIcon />
+              </IconButton>
+            </div>
             <DialogContent dividers>
-              <DialogContentText id="dialog-description">
-                {curClickedNews.content}
-              </DialogContentText>
+              <img
+                alt={curClickedNews.img}
+                src={curClickedNews.img}
+                className={classes.dialogImg}
+              />
+              <DialogContentText id="dialog-news-desc">{curClickedNews.content}</DialogContentText>
             </DialogContent>
-            <DialogActions>
-              <Typography>{curClickedNews.time}</Typography>
-              <Button color="primary">{curClickedNews.source}</Button>
+            <DialogActions className={classes.dialogFooter}>
+              <Typography variant="caption" color="primary" component="p">
+                {curClickedNews.time}
+              </Typography>
+              <Button
+                size="small"
+                color="primary"
+                onClick={() => openArticleUrl(curClickedNews.url)}
+              >
+                {curClickedNews.source}
+              </Button>
             </DialogActions>
           </Dialog>
         </>

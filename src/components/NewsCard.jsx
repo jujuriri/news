@@ -41,6 +41,7 @@ const NewsCard = ({
   articleUrl,
   newsContent,
   openDialog,
+  openArticleUrl,
 }) => {
   const classes = useStyles()
 
@@ -66,13 +67,9 @@ const NewsCard = ({
 
   const checkedAuthor = name => {
     if (name === null || name === 'null' || !name) {
-      return `No Author Information.`
+      return `(No Author Information)`
     }
     return name
-  }
-
-  const openArticleUrl = url => {
-    window.open(url, '_blank')
   }
 
   return (
@@ -86,7 +83,8 @@ const NewsCard = ({
             checkedNewsContent(newsContent),
             toLocalTime(publishedAt),
             sourceName,
-            checkedAuthor(author)
+            checkedAuthor(author),
+            articleUrl
           )
         }
       >
@@ -133,6 +131,7 @@ NewsCard.propTypes = {
   articleUrl: PropTypes.string,
   newsContent: PropTypes.string,
   openDialog: PropTypes.func.isRequired,
+  openArticleUrl: PropTypes.func.isRequired,
 }
 
 export default NewsCard

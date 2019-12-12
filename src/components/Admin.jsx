@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles, Typography, Avatar } from '@material-ui/core'
 import useFirebase from '../firebase'
 import { useFirebaseAuth } from '../customHooks'
@@ -39,12 +39,25 @@ const useStyles = makeStyles(theme => ({
 function Admin() {
   const classes = useStyles()
   const authUser = useFirebaseAuth(useFirebase)
-  const avatarImg = authUser ? adminIcon : guestIcon
+
+  const [pageTitle, setPageTitle] = useState('')
+  const [avatarImg, setAvatarImg] = useState('')
+
+  useEffect(() => {
+    if (authUser) {
+      setAvatarImg(adminIcon)
+      setPageTitle('Control Panel')
+    } else {
+      setAvatarImg(guestIcon)
+      setPageTitle('Login')
+    }
+  }, [authUser])
+
   return (
     <div className={classes.container}>
       <Avatar alt="News" src={avatarImg} className={classes.logo} />
       <Typography className={classes.title} variant="h6">
-        {authUser ? 'Control Panel' : 'Login'}
+        {pageTitle}
       </Typography>
       {authUser ? <ControlPanel /> : <Login />}
     </div>

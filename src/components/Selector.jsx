@@ -36,6 +36,9 @@ const Selector = ({ name, options, changeHandler, selected }) => {
     }
   }
 
+  // Because I don't want to install short-id here, so I came up with this solution myself.
+  let optionKey = 0
+
   return (
     <FormControl variant="outlined" className={classes.formControl} error={hasErr}>
       <InputLabel ref={inputLabel} id="demo-simple-select-outlined-label">
@@ -51,13 +54,14 @@ const Selector = ({ name, options, changeHandler, selected }) => {
         <MenuItem value="">
           <em>None</em>
         </MenuItem>
-        {Array.from(options).map((option, i) => {
+        {Array.from(options).map(option => {
+          optionKey += 1
           return option.name ? (
-            <MenuItem key={`option-${i}`} value={option.name}>
+            <MenuItem key={`optionName-${optionKey}`} value={option.name}>
               {option.name}
             </MenuItem>
           ) : (
-            <MenuItem key={`option-${i}`} value={option}>
+            <MenuItem key={`option-${optionKey}`} value={option}>
               {option}
             </MenuItem>
           )
@@ -70,7 +74,7 @@ const Selector = ({ name, options, changeHandler, selected }) => {
 
 Selector.propTypes = {
   name: PropTypes.string.isRequired,
-  options: PropTypes.object,
+  options: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
   changeHandler: PropTypes.func.isRequired,
   selected: PropTypes.string.isRequired,
 }

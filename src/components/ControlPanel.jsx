@@ -13,6 +13,7 @@ import {
 import { NewsContext, FirestoreContext } from '../context/context'
 import useFirebase from '../firebase'
 import Selector from './Selector'
+import Loader from './Loader'
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -24,11 +25,14 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
     textAlign: 'center',
   },
+  dialogBtn: {
+    textTransform: 'none',
+  },
 }))
 
 function ControlPanel() {
   const classes = useStyles()
-  const controlPanelMsg = 'Settings will be reflected on the public pages.'
+  const controlPanelMsg = 'Current settings is now reflected on the public pages.'
   const firestore = useContext(FirestoreContext)
   const news = useContext(NewsContext)
 
@@ -36,12 +40,18 @@ function ControlPanel() {
   const [selectedPubl, setSelectedPubl] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [saveMsg, setSaveMsg] = useState('')
+  const [saveHasErr, setSaveHasErr] = useState(false)
 
   useEffect(() => {
-    setSelectedCtry(firestore.adminCountry)
-    setSelectedCat(firestore.adminCategory)
-    setSelectedPubl(firestore.adminPublisher)
-  }, [firestore.adminCategory, firestore.adminCountry, firestore.adminPublisher])
+    if (firestore.adminCC.ctry && firestore.adminPubl !== '') {
+      setSelectedCtry(firestore.adminCC.ctry)
+      setSelectedCat(firestore.adminCC.cat)
+      setSelectedPubl(firestore.adminPubl)
+      setIsLoading(false)
+    }
+  }, [firestore.adminCC.cat, firestore.adminCC.ctry, firestore.adminPubl])
 
   const changeCtry = value => {
     setSelectedCtry(value)
@@ -60,7 +70,7 @@ function ControlPanel() {
   }
 
   const refresh = () => {
-    console.log('eee')
+    window.location.href = `${process.env.PUBLIC_URL}/`
   }
 
   const saveAdminSettings = () => {
@@ -72,67 +82,88 @@ function ControlPanel() {
       }
       useFirebase
         .saveSettings(admin)
-        .then(setIsDialogOpen(true))
+        .then(() => {
+          setSaveMsg(
+            `New settings will be applied to your (and guest's) next visit. (or you can refresh website right now.)`
+          )
+          setSaveHasErr(false)
+          setIsDialogOpen(true)
+        })
         .catch(err => {
-          console.log(err)
+          setSaveMsg(`There is something wrong, error: ${err}`)
+          setSaveHasErr(true)
+          setIsDialogOpen(true)
         })
     } else {
-      console.log('選項都必填')
+      // Required field is left empty.
+      return 0
     }
+    // Arrow function has to return something at the end
+    return 0
   }
 
   return (
-    <div>
-      <Selector
-        name="Publisher"
-        options={news.publishers}
-        selected={selectedPubl}
-        changeHandler={chagePubl}
-      />
-      <Selector
-        name="Country"
-        options={news.countries}
-        selected={selectedCtry}
-        changeHandler={changeCtry}
-      />
-      <Selector
-        name="Category"
-        options={news.categories}
-        selected={selectedCat}
-        changeHandler={changeCat}
-      />
-      <Button className={classes.button} variant="outlined" fullWidth onClick={saveAdminSettings}>
-        Save
-      </Button>
-      <Dialog open={isDialogOpen} onClose={closeDialog}>
-        <DialogTitle id="dialog-Admin">Settings Saved</DialogTitle>
-        <DialogContent dividers>
-          <DialogContentText id="dialog-description">
-            New settings will be applied to your next visit. (or you can refresh whole website right
-            now.)
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button color="primary" onClick={closeDialog}>
-            Ok (Do nothing)
+    <>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div>
+          <Selector
+            name="Publisher"
+            options={news.publishers}
+            selected={selectedPubl}
+            changeHandler={chagePubl}
+          />
+          <Selector
+            name="Country"
+            options={news.countries}
+            selected={selectedCtry}
+            changeHandler={changeCtry}
+          />
+          <Selector
+            name="Category"
+            options={news.categories}
+            selected={selectedCat}
+            changeHandler={changeCat}
+          />
+          <Button
+            className={classes.button}
+            variant="outlined"
+            fullWidth
+            onClick={saveAdminSettings}
+          >
+            Save
           </Button>
-          <Button color="primary" onClick={refresh}>
-            Refresh website
+          <Dialog open={isDialogOpen} onClose={closeDialog}>
+            <DialogTitle id="dialog-Admin">Settings Saved</DialogTitle>
+            <DialogContent dividers>
+              <DialogContentText id="dialog-description">{saveMsg}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button className={classes.dialogBtn} color="primary" onClick={closeDialog}>
+                Got it
+              </Button>
+              {!saveHasErr && (
+                <Button className={classes.dialogBtn} color="primary" onClick={refresh}>
+                  Refresh now
+                </Button>
+              )}
+            </DialogActions>
+          </Dialog>
+          <Button
+            className={classes.button}
+            variant="outlined"
+            fullWidth
+            onClick={() => useFirebase.logOut()}
+          >
+            Log Out
           </Button>
-        </DialogActions>
-      </Dialog>
-      <Button
-        className={classes.button}
-        variant="outlined"
-        fullWidth
-        onClick={() => useFirebase.logOut()}
-      >
-        Log Out
-      </Button>
-      <ListItem className={classes.controlPanelMsg}>
-        <ListItemText primary={controlPanelMsg} />
-      </ListItem>
-    </div>
+          <ListItem className={classes.controlPanelMsg}>
+            <ListItemText primary={controlPanelMsg} />
+          </ListItem>
+        </div>
+      )}
+    </>
   )
 }
 
