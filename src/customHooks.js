@@ -12,6 +12,7 @@ const useFirebaseAuth = myFirebase => {
   return authUser
 }
 
+// Memo down previous props or state, allow me to compare with current value.
 const usePrevious = value => {
   const ref = useRef()
   useEffect(() => {
@@ -20,6 +21,7 @@ const usePrevious = value => {
   return ref.current
 }
 
+// Detect window width.
 const useWindowWidth = () => {
   const [width, setWidth] = useState(window.innerWidth)
   useEffect(() => {

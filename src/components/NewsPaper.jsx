@@ -101,7 +101,7 @@ const NewsPaper = ({ readBy }) => {
   const [selectedCtry, setSelectedCtry] = useState('')
   const [selectedCat, setSelectedCat] = useState('')
   const [selectedPubl, setSelectedPubl] = useState('')
-  const [isLaoding, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
   const [newsList, setNewsList] = useState([])
   const [totalResults, setTotalResults] = useState(0)
   const [curPage, setCurPage] = useState(1)
@@ -194,7 +194,7 @@ const NewsPaper = ({ readBy }) => {
   useEffect(() => {
     const handleScroll = () => {
       const trigger = document.body.offsetHeight - 5
-      if (window.innerHeight + window.scrollY >= trigger && !isLaoding) {
+      if (window.innerHeight + window.scrollY >= trigger && !isLoading) {
         if (totalResults > newsList.length) {
           setCurPage(curPage + 1)
         } else {
@@ -220,7 +220,7 @@ const NewsPaper = ({ readBy }) => {
   }, [
     curPage,
     getNews,
-    isLaoding,
+    isLoading,
     newsList.length,
     prevCurPage,
     readBy,
@@ -407,7 +407,12 @@ const NewsPaper = ({ readBy }) => {
           </Dialog>
         </>
       )}
-      {isLaoding && <Loader />}
+      {!isLoading && newsList.length <= 0 && (
+        <Typography variant="h5" color="primary" align="center">
+          No news was found for your search.
+        </Typography>
+      )}
+      {isLoading && <Loader />}
     </div>
   )
 }

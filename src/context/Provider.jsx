@@ -94,7 +94,6 @@ const Provider = ({ children }) => {
 
     const getFiresotre = async () => {
       const doc = await useFirebase.getSettings()
-      console.log('getFirestore: Settings got at Provider →', doc.data())
       setAdminCC({ ctry: doc.data().country, cat: doc.data().category })
       setAdminPubl(doc.data().publisher)
     }
