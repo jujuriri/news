@@ -4,15 +4,15 @@
 > 個人專案
 > 個人プロジェクト
 
-- A simple website shows you Today's Top News Headlines.
-  一個簡單的看今日頭條新聞網站。
-  今日のトップニュースを見ることができるシンプルなサイトです。
+- [x] A simple website shows you Today's Top News Headlines.
+- [x] 一個簡單的看今日頭條新聞網站。
+- [x] 今日のトップニュースを見ることができるシンプルなサイトです。
 
-| Tech Stack             |                          |                                  |
-| :--------------------- | :----------------------- | :------------------------------- |
-| - [x] Create React App | - [x] React Hooks        | - [x] React Router               |
-| - [x] Context API      | - [x] Material UI        | - [x] News API                   |
-| - [x] Firebase Auth    | - [x] Firebase Firestore | - [x] ESLint (Airbnb) + Prettier |
+| Tech Stack       |                    |                            |
+| :--------------- | :----------------- | :------------------------- |
+| Create React App | React Hooks        | React Router               |
+| Context API      | Material UI        | News API                   |
+| Firebase Auth    | Firebase Firestore | ESLint (Airbnb) + Prettier |
 
 #### Feature
 
