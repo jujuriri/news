@@ -113,15 +113,6 @@ const NewsPaper = ({ readBy }) => {
   const prevSelectedPubl = usePrevious(selectedPubl)
   const prevCurPage = usePrevious(curPage)
 
-  // Firebase thing
-  useEffect(() => {
-    if (firestore.adminCC.ctry && firestore.adminCC.cat && firestore.adminPubl !== '') {
-      setSelectedCtry(firestore.adminCC.ctry)
-      setSelectedCat(firestore.adminCC.cat)
-      setSelectedPubl(firestore.adminPubl)
-    }
-  }, [firestore.adminCC.cat, firestore.adminCC.ctry, firestore.adminPubl, readBy])
-
   // Function for fetching news
   const getNews = useCallback(
     async (ctry = null, cat = null, publ = null, pageNum = null) => {
@@ -153,16 +144,20 @@ const NewsPaper = ({ readBy }) => {
           setNewsList(res.data.articles)
         }
         setTotalResults(res.data.totalResults)
-        setIsLoading(false)
-        setIsAdminSetting(false)
-      } else {
-        throw new Error('No Articles.')
       }
+      setIsLoading(false)
+      setIsAdminSetting(false)
     },
     [curPage, news.countries, news.publishers, newsList]
   )
 
   useEffect(() => {
+    // Firebase thing
+    if (firestore.adminCC.ctry && firestore.adminCC.cat && firestore.adminPubl !== '') {
+      setSelectedCtry(firestore.adminCC.ctry)
+      setSelectedCat(firestore.adminCC.cat)
+      setSelectedPubl(firestore.adminPubl)
+    }
     // If user open Country and Category page
     if (readBy === 'Country and Category') {
       if (isAdminSetting && prevSelectedCtry !== selectedCtry && prevSelectedCat !== selectedCat) {
@@ -176,6 +171,9 @@ const NewsPaper = ({ readBy }) => {
       }
     }
   }, [
+    firestore.adminCC.cat,
+    firestore.adminCC.ctry,
+    firestore.adminPubl,
     getNews,
     isAdminSetting,
     news.countries,

@@ -21,8 +21,10 @@ const Masonry = ({ colNum, children }) => {
   // Create columns based on colNum, prepare for mansory layout.
   const cols = Array.from({ length: colNum }, () => [])
   // Fill Cols
-  if (cols[0]) {
+  if (cols[0] && children.length > 0) {
     children.forEach((child, i) => cols[i % colNum].push(child))
+  } else {
+    console.log('cols[0] undefined')
   }
   // Because I don't want to install short-id here, so I came up with this solution myself.
   let mansoryColKey = 0
