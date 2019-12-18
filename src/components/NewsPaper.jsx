@@ -107,6 +107,9 @@ const NewsPaper = ({ readBy }) => {
   const [curPage, setCurPage] = useState(1)
   const [curClickedNews, setCurClickedNews] = useState({})
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isCtryReady, setIsCtryReady] = useState(false)
+  const [isCatReady, setIsCatReady] = useState(false)
+  const [isPublReady, setIsPublReady] = useState(false)
 
   const prevSelectedCtry = usePrevious(selectedCtry)
   const prevSelectedCat = usePrevious(selectedCat)
@@ -152,22 +155,29 @@ const NewsPaper = ({ readBy }) => {
   )
 
   useEffect(() => {
-    // Firebase thing
-    if (firestore.adminCC.ctry && firestore.adminCC.cat && firestore.adminPubl !== '') {
-      setSelectedCtry(firestore.adminCC.ctry)
-      setSelectedCat(firestore.adminCC.cat)
-      setSelectedPubl(firestore.adminPubl)
-    }
-    // If user open Country and Category page
-    if (readBy === 'Country and Category') {
-      if (isAdminSetting && prevSelectedCtry !== selectedCtry && prevSelectedCat !== selectedCat) {
-        getNews(selectedCtry, selectedCat)
+    if (isAdminSetting) {
+      // If user open Country and Category page
+      if (readBy === 'Country and Category') {
+        // Wait for <Selector /> options & firestore ready
+        if (isCtryReady && isCatReady && firestore.adminCC.ctry && firestore.adminCC.cat) {
+          setSelectedCtry(firestore.adminCC.ctry)
+          setSelectedCat(firestore.adminCC.cat)
+        }
+        // Fetch news data
+        if (prevSelectedCtry !== selectedCtry && prevSelectedCat !== selectedCat) {
+          getNews(selectedCtry, selectedCat)
+        }
       }
-    }
-    // If users open Publisher page
-    if (readBy === 'Publisher') {
-      if (isAdminSetting && prevSelectedPubl !== selectedPubl) {
-        getNews(null, null, selectedPubl)
+      // If users open Publisher page
+      if (readBy === 'Publisher') {
+        // Wait for <Selector /> options & firestore ready
+        if (isPublReady && firestore.adminPubl !== '') {
+          setSelectedPubl(firestore.adminPubl)
+        }
+        // Fetch news data
+        if (prevSelectedPubl !== selectedPubl) {
+          getNews(null, null, selectedPubl)
+        }
       }
     }
   }, [
@@ -176,6 +186,9 @@ const NewsPaper = ({ readBy }) => {
     firestore.adminPubl,
     getNews,
     isAdminSetting,
+    isCatReady,
+    isCtryReady,
+    isPublReady,
     news.countries,
     news.publishers,
     newsList,
@@ -263,7 +276,7 @@ const NewsPaper = ({ readBy }) => {
 
   const userSearch = () => {
     if (!isAdminSetting) {
-      if (selectedCat !== '' && selectedCtry !== '' && selectedPubl !== '') {
+      if ((selectedCat !== '' && selectedCtry !== '') || selectedPubl !== '') {
         if (
           prevSelectedCtry !== selectedCtry ||
           prevSelectedCat !== selectedCat ||
@@ -316,6 +329,18 @@ const NewsPaper = ({ readBy }) => {
   // Because I don't want to install short-id here, so I came up with this solution myself.
   let newsCardKey = 0
 
+  const handleCtryReady = bool => {
+    setIsCtryReady(bool)
+  }
+
+  const handleCatReady = bool => {
+    setIsCatReady(bool)
+  }
+
+  const handlePublReady = bool => {
+    setIsPublReady(bool)
+  }
+
   return (
     <div className={classes.newsPaper}>
       <div className={classes.searchBar}>
@@ -326,12 +351,14 @@ const NewsPaper = ({ readBy }) => {
               options={news.countries}
               selected={selectedCtry}
               changeHandler={changeCtry}
+              hasReady={handleCtryReady}
             />
             <Selector
               name="Category"
               options={news.categories}
               selected={selectedCat}
               changeHandler={changeCat}
+              hasReady={handleCatReady}
             />
           </>
         )}
@@ -341,6 +368,7 @@ const NewsPaper = ({ readBy }) => {
             options={news.publishers}
             selected={selectedPubl}
             changeHandler={changePubl}
+            hasReady={handlePublReady}
           />
         )}
         <Button className={classes.searchBtn} variant="outlined" onClick={() => userSearch()}>

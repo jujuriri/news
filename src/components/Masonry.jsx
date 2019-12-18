@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core'
 
@@ -18,20 +18,30 @@ const useStyles = makeStyles(theme => ({
 
 const Masonry = ({ colNum, children }) => {
   const classes = useStyles()
-  // Create columns based on colNum, prepare for mansory layout.
-  const cols = Array.from({ length: colNum }, () => [])
-  // Fill Cols
-  if (cols[0] && children.length > 0) {
-    children.forEach((child, i) => cols[i % colNum].push(child))
-  } else {
-    console.log('cols[0] undefined')
-  }
+
+  const [curCols, setCurCols] = useState([])
+
+  const masonryInit = useCallback(() => {
+    if (children.length > 0) {
+      // Create columns based on colNum, prepare for mansory layout.
+      const cols = Array.from({ length: colNum }, () => [])
+      // Fill Cols
+      children.forEach((child, i) => cols[i % colNum].push(child))
+      return cols
+    }
+    return ['Opps ;p']
+  }, [children, colNum])
+
+  useEffect(() => {
+    setCurCols(masonryInit())
+  }, [masonryInit])
+
   // Because I don't want to install short-id here, so I came up with this solution myself.
   let mansoryColKey = 0
 
   return (
     <div className={classes.mansory}>
-      {cols.map(c => {
+      {curCols.map(c => {
         mansoryColKey += 1
         return (
           <div key={`mansoryCol-${mansoryColKey}`} className={classes.mansoryCols}>

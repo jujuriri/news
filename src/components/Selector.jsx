@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-const Selector = ({ name, options, changeHandler, selected }) => {
+const Selector = ({ name, options, changeHandler, selected, hasReady }) => {
   const classes = useStyles()
   const inputLabel = useRef(null)
 
@@ -27,6 +27,15 @@ const Selector = ({ name, options, changeHandler, selected }) => {
     setLabelWidth(inputLabel.current.offsetWidth)
   }, [])
 
+  // Because I don't want to install short-id here, so I came up with this solution myself.
+  let optionKey = 0
+
+  useEffect(() => {
+    if (optionKey > 0) {
+      hasReady(true)
+    }
+  }, [hasReady, optionKey])
+
   const selectValid = e => {
     changeHandler(e.target.value)
     if (e.target.value === '') {
@@ -35,9 +44,6 @@ const Selector = ({ name, options, changeHandler, selected }) => {
       setHasErr(false)
     }
   }
-
-  // Because I don't want to install short-id here, so I came up with this solution myself.
-  let optionKey = 0
 
   return (
     <FormControl variant="outlined" className={classes.formControl} error={hasErr}>
@@ -77,6 +83,7 @@ Selector.propTypes = {
   options: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
   changeHandler: PropTypes.func.isRequired,
   selected: PropTypes.string.isRequired,
+  hasReady: PropTypes.func.isRequired,
 }
 
 export default Selector
