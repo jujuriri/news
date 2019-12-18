@@ -21,20 +21,20 @@ const Masonry = ({ colNum, children }) => {
 
   const [curCols, setCurCols] = useState([])
 
-  const masonryInit = useCallback(() => {
-    if (children.length > 0) {
-      // Create columns based on colNum, prepare for mansory layout.
-      const cols = Array.from({ length: colNum }, () => [])
-      // Fill Cols
-      children.forEach((child, i) => cols[i % colNum].push(child))
-      return cols
-    }
-    return ['Opps ;p']
-  }, [children, colNum])
+  const masonryInit = useCallback(
+    colsArr => {
+      // Fill columns
+      children.forEach((child, i) => colsArr[i % colNum].push(child))
+      setCurCols(colsArr)
+    },
+    [children, colNum]
+  )
 
   useEffect(() => {
-    setCurCols(masonryInit())
-  }, [masonryInit])
+    // Create columns, prepare for mansory layout.
+    const cols = Array.from({ length: colNum }, () => [])
+    masonryInit(cols)
+  }, [colNum, masonryInit])
 
   // Because I don't want to install short-id here, so I came up with this solution myself.
   let mansoryColKey = 0
