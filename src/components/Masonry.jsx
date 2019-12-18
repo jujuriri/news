@@ -23,6 +23,7 @@ const Masonry = ({ colNum, children }) => {
 
   const masonryInit = useCallback(
     colsArr => {
+      console.log(colsArr)
       // Fill columns
       children.forEach((child, i) => colsArr[i % colNum].push(child))
       setCurCols(colsArr)
