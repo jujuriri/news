@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/core'
 
@@ -19,21 +19,17 @@ const useStyles = makeStyles(theme => ({
 const Masonry = ({ colNum, children }) => {
   const classes = useStyles()
 
-  const [cols, setCols] = useState([])
-
-  const initMasonry = useCallback(() => {
-    // Create columns, prepare for mansory layout.
-    const colsPrep = Array.from({ length: colNum }, () => [])
-    // Fill columns
-    for (let j = 0; j < children.length; j += 1) {
-      colsPrep[j % colNum].push(children[j])
-    }
-    setCols(colsPrep)
-  }, [children, colNum])
+  // Create columns, prepare for mansory layout.
+  const cols = Array.from({ length: colNum }, () => [])
+  // Fill columns
+  for (let j = 0; j < children.length; j += 1) {
+    cols[j % colNum].push(children[j])
+  }
 
   useEffect(() => {
-    initMasonry()
-  }, [initMasonry])
+    console.log('Masonry')
+    console.log('cols', cols)
+  }, [cols])
 
   // Because I don't want to install short-id here, so I came up with this solution myself.
   let mansoryColKey = 0
