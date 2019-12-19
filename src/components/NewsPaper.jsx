@@ -245,14 +245,14 @@ const NewsPaper = ({ readBy }) => {
   const windowWidth = useWindowWidth()
   const [colNum, setColNum] = useState(0)
   useEffect(() => {
-    if (windowWidth < 600) {
-      setColNum(1)
-    } else if (windowWidth < 960) {
-      setColNum(2)
-    } else if (windowWidth < 1280) {
-      setColNum(3)
-    } else if (windowWidth < 1920) {
+    if (windowWidth > 1280) {
       setColNum(4)
+    } else if (windowWidth > 960) {
+      setColNum(3)
+    } else if (windowWidth > 600) {
+      setColNum(2)
+    } else {
+      setColNum(1)
     }
   }, [windowWidth])
 

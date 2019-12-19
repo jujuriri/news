@@ -28,8 +28,7 @@ const Masonry = ({ colNum, children }) => {
 
   useEffect(() => {
     console.log('Masonry')
-    console.log('cols', cols)
-  }, [cols])
+  }, [])
 
   // Because I don't want to install short-id here, so I came up with this solution myself.
   let mansoryColKey = 0
