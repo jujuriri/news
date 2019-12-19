@@ -44,7 +44,6 @@ function ControlPanel() {
   const [saveMsg, setSaveMsg] = useState('')
   const [saveTitle, setSaveTitle] = useState('')
   const [saveHasErr, setSaveHasErr] = useState(false)
-  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     if (firestore.adminCC.ctry && firestore.adminCC.cat && firestore.adminPubl !== '') {
@@ -83,7 +82,7 @@ function ControlPanel() {
         country: selectedCtry,
       }
       setIsDialogOpen(true)
-      setIsSaving(true)
+      setIsLoading(true)
       useFirebase
         .saveSettings(admin)
         .then(() => {
@@ -92,13 +91,13 @@ function ControlPanel() {
             `New settings will be applied to your (and guest's) next visit. (or you can refresh website right now.)`
           )
           setSaveHasErr(false)
-          setIsSaving(false)
+          setIsLoading(false)
         })
         .catch(err => {
           setSaveTitle(`Opps !`)
           setSaveMsg(`There is something wrong, error: ${err}`)
           setSaveHasErr(true)
-          setIsSaving(false)
+          setIsLoading(false)
         })
     } else {
       // Required field is left empty.
@@ -143,10 +142,7 @@ function ControlPanel() {
           <Dialog open={isDialogOpen} onClose={closeDialog}>
             <DialogTitle id="dialog-Admin">{saveTitle}</DialogTitle>
             <DialogContent dividers>
-              {isSaving && <Loader />}
-              {!isSaving && (
-                <DialogContentText id="dialog-description">{saveMsg}</DialogContentText>
-              )}
+              <DialogContentText id="dialog-description">{saveMsg}</DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button className={classes.dialogBtn} color="primary" onClick={closeDialog}>
