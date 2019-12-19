@@ -42,10 +42,12 @@ function ControlPanel() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [saveMsg, setSaveMsg] = useState('')
+  const [saveTitle, setSaveTitle] = useState('')
   const [saveHasErr, setSaveHasErr] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    if (firestore.adminCC.ctry && firestore.adminPubl !== '') {
+    if (firestore.adminCC.ctry && firestore.adminCC.cat && firestore.adminPubl !== '') {
       setSelectedCtry(firestore.adminCC.ctry)
       setSelectedCat(firestore.adminCC.cat)
       setSelectedPubl(firestore.adminPubl)
@@ -80,19 +82,23 @@ function ControlPanel() {
         publisher: selectedPubl,
         country: selectedCtry,
       }
+      setIsDialogOpen(true)
+      setIsSaving(true)
       useFirebase
         .saveSettings(admin)
         .then(() => {
+          setSaveTitle(`Settings Saved !`)
           setSaveMsg(
             `New settings will be applied to your (and guest's) next visit. (or you can refresh website right now.)`
           )
           setSaveHasErr(false)
-          setIsDialogOpen(true)
+          setIsSaving(false)
         })
         .catch(err => {
+          setSaveTitle(`Opps !`)
           setSaveMsg(`There is something wrong, error: ${err}`)
           setSaveHasErr(true)
-          setIsDialogOpen(true)
+          setIsSaving(false)
         })
     } else {
       // Required field is left empty.
@@ -135,9 +141,12 @@ function ControlPanel() {
             Save
           </Button>
           <Dialog open={isDialogOpen} onClose={closeDialog}>
-            <DialogTitle id="dialog-Admin">Settings Saved</DialogTitle>
+            <DialogTitle id="dialog-Admin">{saveTitle}</DialogTitle>
             <DialogContent dividers>
-              <DialogContentText id="dialog-description">{saveMsg}</DialogContentText>
+              {isSaving && <Loader />}
+              {!isSaving && (
+                <DialogContentText id="dialog-description">{saveMsg}</DialogContentText>
+              )}
             </DialogContent>
             <DialogActions>
               <Button className={classes.dialogBtn} color="primary" onClick={closeDialog}>

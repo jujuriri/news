@@ -31,8 +31,10 @@ const Selector = ({ name, options, changeHandler, selected, hasReady }) => {
   let optionKey = 0
 
   useEffect(() => {
-    if (optionKey > 0) {
+    if (hasReady && optionKey > 0) {
       hasReady(true)
+    } else {
+      console.log('optionKey')
     }
   }, [hasReady, optionKey])
 
@@ -78,12 +80,16 @@ const Selector = ({ name, options, changeHandler, selected, hasReady }) => {
   )
 }
 
+Selector.defaultProps = {
+  hasReady: null,
+}
+
 Selector.propTypes = {
   name: PropTypes.string.isRequired,
   options: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
   changeHandler: PropTypes.func.isRequired,
   selected: PropTypes.string.isRequired,
-  hasReady: PropTypes.func.isRequired,
+  hasReady: PropTypes.oneOfType([PropTypes.func, PropTypes.instanceOf(null)]),
 }
 
 export default Selector
