@@ -19,30 +19,28 @@ const useStyles = makeStyles(theme => ({
 const Masonry = ({ colNum, children }) => {
   const classes = useStyles()
 
-  const [curCols, setCurCols] = useState([])
+  const [cols, setCols] = useState([])
 
-  const masonryInit = useCallback(() => {
+  const initMasonry = useCallback(() => {
     // Create columns, prepare for mansory layout.
-    const cols = Array.from({ length: colNum }, () => [])
+    const colsPrep = Array.from({ length: colNum }, () => [])
     // Fill columns
-    console.log('cols Outside', cols)
-    children.forEach((child, i) => {
-      console.log('cols forEach', cols)
-      cols[i % colNum].push(child)
-    })
-    setCurCols(cols)
+    for (let j = 0; j < children.length; j += 1) {
+      colsPrep[j % colNum].push(children[j])
+    }
+    setCols(colsPrep)
   }, [children, colNum])
 
   useEffect(() => {
-    masonryInit()
-  }, [colNum, masonryInit])
+    initMasonry()
+  }, [initMasonry])
 
   // Because I don't want to install short-id here, so I came up with this solution myself.
   let mansoryColKey = 0
 
   return (
     <div className={classes.mansory}>
-      {curCols.map(c => {
+      {cols.map(c => {
         mansoryColKey += 1
         return (
           <div key={`mansoryCol-${mansoryColKey}`} className={classes.mansoryCols}>
